@@ -3,8 +3,9 @@ import dlib
 import cv2
 import time
 
-dlibFacePredictor = '/root/openface/models/dlib/shape_predictor_68_face_landmarks.dat'
+dlibFacePredictor = '/root/openface/models/dlib/shape_predictor_68_face_landmarks.dat' # TODO: possible perf improvement reduce landmarks
 scale = 2
+
 class KnownFaceDetector():
     def __init__(self):
         start=time.time()
@@ -42,10 +43,14 @@ class KnownFaceDetector():
 
     def align_face(self, image, bounding_box):
         start=time.time()
+        landmarks=self.align.findLandmarks(image, bounding_box)
+        print('>>> findLandmarks took %.3f seconds' % (time.time() - start))
+        start=time.time()
         aligned_face = self.align.align(
             self.image_dimension,
             image,
             bounding_box,
+            landmarks,
             landmarkIndices=openface.AlignDlib.OUTER_EYES_AND_NOSE)
         print('>>> align_face took %.3f seconds' % (time.time() - start))
         if aligned_face is None:
