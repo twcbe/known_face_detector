@@ -5,9 +5,12 @@ from threading import Thread
 from fps import Fps
 
 class OpencvVideoSource(object):
-    def __init__(self, video_device_id=0):
+    def __init__(self, video_device_id=0, use_thread=True):
         self.video_device_id = video_device_id
-        self.image = None
+        self._image = None
+        self.use_thread = use_thread
+        self.fps = Fps()
+        self.fps.start()
 
     def start_camera(self):
         start = time.time()
@@ -15,11 +18,12 @@ class OpencvVideoSource(object):
         print('>>> opened VideoCapture in %.3f seconds' % (time.time() - start))
         # subprocess.check_output(['bash', '-c', 'v4l2-ctl -c backlight_compensation=1,sharpness=130,power_line_frequency=1,white_balance_temperature_auto=1,saturation=128,contrast=128,brightness=128,focus_absolute=0,focus_auto=0'])
         self.running = True
-        start = time.time()
-        self.thread = Thread(target = self.grab_frames, args=())
-        self.thread.daemon = True
-        self.thread.start()
-        print('>>> camera thread started in %.3f seconds' % (time.time() - start))
+        if self.use_thread:
+            start = time.time()
+            self.thread = Thread(target = self.grab_frames, args=())
+            self.thread.daemon = True
+            self.thread.start()
+            print('>>> camera thread started in %.3f seconds' % (time.time() - start))
 
         return self
 
@@ -27,11 +31,9 @@ class OpencvVideoSource(object):
         self.running = False
 
     def grab_frames(self):
-        self.fps = Fps()
-        self.fps.start()
         while self.running:
             self.fps.update()
-            ret, self.image = self.cap.read()
+            ret, self._image = self.cap.read()
 
     def get_rgb_image(self):
         if self.get_image() is None:
@@ -42,7 +44,10 @@ class OpencvVideoSource(object):
         return self.get_image()
 
     def get_image(self):
-        if self.image is None:
-            return None
-        # small = cv2.resize(self.image, (0,0), fx=0.5, fy=0.5)
-        return self.image
+        if not self.use_thread:
+            self._image = self.cap.read()
+            self.fps.update()
+        # if self._image is None:
+        #     return None
+        # small = cv2.resize(self._image, (0,0), fx=0.5, fy=0.5)
+        return self._image

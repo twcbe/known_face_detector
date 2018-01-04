@@ -7,7 +7,7 @@ import cv2
 fps = Fps()
 
 detector = KnownFaceDetector()
-camera = OpencvVideoSource(0).start_camera()
+camera = OpencvVideoSource(video_device_id=0, use_thread=False).start_camera()
 fps.start()
 not_ready_printed=False
 while True:
