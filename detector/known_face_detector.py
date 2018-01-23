@@ -4,7 +4,7 @@ import cv2
 import time
 
 dlibFacePredictor = '/root/openface/models/dlib/shape_predictor_68_face_landmarks.dat' # TODO: possible perf improvement reduce landmarks
-scale = 2
+scale = 1
 
 class KnownFaceDetector():
     def __init__(self):
@@ -27,7 +27,7 @@ class KnownFaceDetector():
     def get_all_bounding_boxes(self, image):
         start=time.time()
         image = cv2.resize(image, (0,0), fx=1.0/scale, fy=1.0/scale)
-        bounding_boxes = self.face_detector(image, 0);
+        bounding_boxes = self.face_detector(image, 1);
         print('>>> face_detector took %.3f seconds' % (time.time() - start))
         start=time.time()
         bounding_boxes = sorted(bounding_boxes, key=lambda rect: rect.width() * rect.height())

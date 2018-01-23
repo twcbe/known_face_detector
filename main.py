@@ -10,7 +10,9 @@ detector = KnownFaceDetector()
 camera = OpencvVideoSource(video_device_id=0, use_thread=False).start_camera()
 fps.start()
 not_ready_printed=False
+frame_number = 0
 while True:
+    frame_number = frame_number + 1
     img = camera.get_rgb_image()
     if img is None:
         if not not_ready_printed:
@@ -21,10 +23,11 @@ while True:
     if not_ready_printed:
         not_ready_printed = False
         print("camera now ready")
-    # cv2.imwrite('./%04d.png' % frame, img)
+    # cv2.imwrite('./%04d.png' % frame_number, img)
 
     faces = detector.detect_faces(img,100)
     if len(faces) > 0:
+        cv2.imwrite('./%04d.png' % frame_number, cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
         # raise event saying some face detected and if it is known face or not
         print("detected %d faces" % len(faces))
         print(faces)
