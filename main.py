@@ -1,4 +1,4 @@
-from detector.known_face_detector import KnownFaceDetector
+from known_face_detector import KnownFaceDetector
 from opencv_video_source import OpencvVideoSource
 from fps import Fps
 from utils import *
