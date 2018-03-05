@@ -12,6 +12,7 @@ camera = OpencvVideoSource(video_device_id=0, use_thread=False).start_camera()
 fps.start()
 not_ready_printed=False
 frame_number = 0
+cv2.namedWindow("imageView")
 while True:
     frame_number = frame_number + 1
     img = camera.get_rgb_image()
@@ -37,4 +38,6 @@ while True:
     fps.update()
     print("program: " + fps.info())
     print("Camera: " + camera.fps.info())
+    cv2.imshow("imageView", img)
+    cv2.waitKey(1)
     time.sleep(0.01)
