@@ -1,1 +1,9 @@
 *.pyc
+*.jpg
+*.JPG
+*.png
+*.PNG
+.DS_Store
+Archive/
+*.npy
+*.pkl

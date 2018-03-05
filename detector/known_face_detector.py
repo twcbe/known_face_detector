@@ -2,12 +2,14 @@ import openface
 import dlib
 import cv2
 import time
+import pickle
+from sklearn.naive_bayes import GaussianNB
 
 dlibFacePredictor = '/root/openface/models/dlib/shape_predictor_68_face_landmarks.dat' # TODO: possible perf improvement reduce landmarks
 scale = 1
 
 class KnownFaceDetector():
-    def __init__(self):
+    def __init__(self, trained_classifier_file="tw_coimbatore_faces_classifier"):
         start=time.time()
         self.net = openface.TorchNeuralNet('/root/openface/models/openface/nn4.small2.v1.t7')
         print('>>> initialised torch network in %.3f seconds' % (time.time() - start))
@@ -18,6 +20,7 @@ class KnownFaceDetector():
         start=time.time()
         self.align = openface.AlignDlib(dlibFacePredictor)
         print('>>> AlignDlib took %.3f seconds' % (time.time() - start))
+        self.classifier = load_file(trained_classifier_file)
 
     def detect_faces(self, image, max_faces=1):
         bounding_boxes = self.get_all_bounding_boxes(image)
@@ -37,8 +40,10 @@ class KnownFaceDetector():
     def detect_face(self, image, bounding_box):
         aligned_face = self.align_face(image, bounding_box)
         rep = self.get_representation(aligned_face)
+        # classifier goes in here
+        predicted_class = self.classifier.predict([rep])[0]
         return {
-            'known': False, 'bb': bounding_box
+            'known': False, 'bb': bounding_box, 'class': predicted_class
         }
 
     def align_face(self, image, bounding_box):

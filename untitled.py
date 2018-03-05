@@ -41,7 +41,7 @@ for x in xrange(0, cluster_leader_board[0][1]):
     print("open '" + "' '".join(np.array(imgPaths)[clusters==x]) + "'")
 
 
-align = openface.AlignDlib('dlib-models/shape_predictor_68_face_landmarks.dat')
+align = openface.AlignDlib('./../models/dlib/shape_predictor_68_face_landmarks.dat')
 bb = align.getLargestFaceBoundingBox(rgbImg)
 alignedFace = align.align(96, rgbImg, bb, landmarkIndices=openface.AlignDlib.OUTER_EYES_AND_NOSE)
 rep=net.forward(alignedFace)
