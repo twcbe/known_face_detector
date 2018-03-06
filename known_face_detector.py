@@ -5,6 +5,7 @@ import time
 import pickle
 from sklearn.naive_bayes import GaussianNB
 from utils import *
+import numpy as np
 
 dlibFacePredictor = '/root/openface/models/dlib/shape_predictor_68_face_landmarks.dat' # TODO: possible perf improvement reduce landmarks
 scale = 1
@@ -24,6 +25,8 @@ class KnownFaceDetector():
         self.align = openface.AlignDlib(dlibFacePredictor)
         print('>>> AlignDlib took %.3f seconds' % (time.time() - start))
         self.classifier = load_file(trained_classifier_file)
+        self.reps = load_file("reps")
+        self.clusters = load_file("clusters")
 
     def detect_faces(self, image, max_faces=1):
         bounding_boxes = self.get_all_bounding_boxes(image)
@@ -45,7 +48,7 @@ class KnownFaceDetector():
         rep = self.get_representation(aligned_face)
         # classifier goes in here
         # TODO: NEXT
-        (predicted_class, nearest_class, distance, classifier_confidence) = predict_cluster(rep)
+        (predicted_class, nearest_class, distance, classifier_confidence) = self.predict_cluster(rep)
         # predicted_class = self.classifier.predict_proba([rep])[0]
         return {
             'known': predicted_class != None,
@@ -58,7 +61,7 @@ class KnownFaceDetector():
         }
 
     def predict_cluster(self, rep):
-        probabilities = self.gnb.predict_proba([rep])[0]
+        probabilities = self.classifier.predict_proba([rep])[0]
 
         high_confidence = probabilities > MIN_CONFIDENCE_THRESHOLD
         # print(high_confidence)
@@ -94,3 +97,17 @@ class KnownFaceDetector():
         rep = self.net.forward(aligned_face_image)
         print('>>> net.forward pass took %.3f seconds' % (time.time() - start))
         return rep
+
+def compute_mean_euclidean_distance(all_reps, clusters, face_rep, predicted_cluster):
+    predicted_cluster_reps = all_reps[clusters==predicted_cluster]
+
+    distances = np.array([distance_between(rep, face_rep) for rep in predicted_cluster_reps])
+    average_distance = np.average(distances)
+
+    # print("Mean Euclidean distance:")
+    # print(average_distance)
+    return average_distance
+
+def distance_between(a,b):
+    d = a.ravel() - b.ravel()
+    return np.dot(d,d)
