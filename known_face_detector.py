@@ -8,6 +8,8 @@ from utils import *
 
 dlibFacePredictor = '/root/openface/models/dlib/shape_predictor_68_face_landmarks.dat' # TODO: possible perf improvement reduce landmarks
 scale = 1
+MIN_CONFIDENCE_THRESHOLD=0.9
+MAX_DISTANCE_THRESHOLD=0.5
 
 class KnownFaceDetector():
     def __init__(self, trained_classifier_file="tw_coimbatore_faces_classifier"):
@@ -42,10 +44,34 @@ class KnownFaceDetector():
         aligned_face = self.align_face(image, bounding_box)
         rep = self.get_representation(aligned_face)
         # classifier goes in here
-        predicted_class = self.classifier.predict([rep])[0]
+        # TODO: NEXT
+        (predicted_class, nearest_class, distance, classifier_confidence) = predict_cluster(rep)
+        # predicted_class = self.classifier.predict_proba([rep])[0]
         return {
-            'known': False, 'bb': bounding_box, 'class': predicted_class
+            'known': predicted_class != None,
+            'bb': bounding_box,
+            'class': predicted_class,
+            'predicted_class': predicted_class,
+            'nearest_class': nearest_class,
+            'distance': distance,
+            'classifier_confidence': classifier_confidence
         }
+
+    def predict_cluster(self, rep):
+        probabilities = self.gnb.predict_proba([rep])[0]
+
+        high_confidence = probabilities > MIN_CONFIDENCE_THRESHOLD
+        # print(high_confidence)
+        if np.count_nonzero(high_confidence) == 1:
+            predicted_cluster = np.where(high_confidence)[0][0]
+            confidence = max(probabilities)
+            # print("predicted_cluster")
+            # print(predicted_cluster)
+            distance = compute_mean_euclidean_distance(self.reps, self.clusters, rep, predicted_cluster)
+            if distance < MAX_DISTANCE_THRESHOLD:
+                return (predicted_cluster, predicted_cluster, distance, confidence)
+            return (None, predicted_cluster, distance, confidence)
+        return (None, None, None, np.count_nonzero(high_confidence))
 
     def align_face(self, image, bounding_box):
         start=time.time()

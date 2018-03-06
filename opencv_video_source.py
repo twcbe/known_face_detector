@@ -5,7 +5,7 @@ from threading import Thread
 from fps import Fps
 
 class OpencvVideoSource(object):
-    def __init__(self, video_device_id=0, use_thread=True):
+    def __init__(self, video_device_id=-1, use_thread=True):
         self.video_device_id = video_device_id
         self._image = None
         self.use_thread = use_thread
