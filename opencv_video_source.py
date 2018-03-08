@@ -40,6 +40,12 @@ class OpencvVideoSource(object):
             return None
         return cv2.cvtColor(self.get_image(), cv2.COLOR_BGR2RGB)
 
+    def get_rgb_bgr_image(self):
+        bgr_image = self.get_image()
+        if bgr_image is None:
+            return (None, None)
+        return (cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB), bgr_image)
+
     def get_bgr_image(self):
         return self.get_image()
 
