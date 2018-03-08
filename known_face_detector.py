@@ -1,3 +1,4 @@
+from face_detector import DlibFaceDetector
 import openface
 import dlib
 import cv2
@@ -13,13 +14,11 @@ MIN_CONFIDENCE_THRESHOLD=0.9
 MAX_DISTANCE_THRESHOLD=0.5
 
 class KnownFaceDetector():
-    def __init__(self, trained_classifier_file="tw_coimbatore_faces_classifier"):
+    def __init__(self, trained_classifier_file="tw_coimbatore_faces_classifier", face_detector_class = DlibFaceDetector):
         start=time.time()
         self.net = openface.TorchNeuralNet('/root/openface/models/openface/nn4.small2.v1.t7')
         # print('>>> initialised torch network in %.3f seconds' % (time.time() - start))
-        start=time.time()
-        self.face_detector = dlib.get_frontal_face_detector()
-        # print('>>> get_frontal_face_detector took %.3f seconds' % (time.time() - start))
+        self.face_detector = face_detector_class()
         self.image_dimension = 96
         start=time.time()
         self.align = openface.AlignDlib(dlibFacePredictor)
@@ -28,22 +27,11 @@ class KnownFaceDetector():
         self.reps = load_file("reps")
         self.clusters = load_file("clusters")
 
-    def detect_faces(self, image, max_faces=1):
-        bounding_boxes = self.get_all_bounding_boxes(image)
+    def identify_faces(self, image, max_faces=1):
         # returns [{known: false, bb: rect()}, {known: true, bb: rect(), representation: rep}]
-        return [self.detect_face(image, bounding_box) for bounding_box in bounding_boxes[0:max_faces]]
+        return [self.identify_face(image, bounding_box) for bounding_box in self.face_detector.detect_faces(image, max_faces)]
 
-    def get_all_bounding_boxes(self, image):
-        start=time.time()
-        image = cv2.resize(image, (0,0), fx=1.0/scale, fy=1.0/scale)
-        bounding_boxes = self.face_detector(image, 1);
-        # print('>>> face_detector took %.3f seconds' % (time.time() - start))
-        start=time.time()
-        bounding_boxes = sorted(bounding_boxes, key=lambda rect: rect.width() * rect.height())
-        # print('>>> sorting bounding_boxes took %.3f seconds' % (time.time() - start))
-        return [dlib.rectangle(bb.left()*scale,bb.top()*scale,bb.right()*scale,bb.bottom()*scale) for bb in bounding_boxes]
-
-    def detect_face(self, image, bounding_box):
+    def identify_face(self, image, bounding_box):
         (aligned_face, landmarks) = self.align_face(image, bounding_box)
         rep = self.get_representation(aligned_face)
         # classifier goes in here
