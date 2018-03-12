@@ -32,10 +32,6 @@ class KnownFaceDetector():
         self.classifier = load_file(trained_classifier_file)
         self.reps = load_file("reps")
         self.clusters = load_file("clusters")
-
-<<<<<<< HEAD
-    def identify_faces(self, image, max_faces=1):
-=======
         print("Publishing event to subscriber")
         auth = {
             'username':"socnhliq",
@@ -50,10 +46,7 @@ class KnownFaceDetector():
             port = 10833,
             protocol = mqtt.MQTTv311)
 
-
-    def detect_faces(self, image, max_faces=1):
-        bounding_boxes = self.get_all_bounding_boxes(image)
->>>>>>> [Nandhitha] Added mqtt publishing
+    def identify_faces(self, image, max_faces=1):
         # returns [{known: false, bb: rect()}, {known: true, bb: rect(), representation: rep}]
         return [self.identify_face(image, bounding_box) for bounding_box in self.face_detector.detect_faces(image, max_faces)]
 
