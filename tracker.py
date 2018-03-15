@@ -24,16 +24,17 @@ class Tracker(object):
         people_seen_this_frame = set()
         for detection in face_detections_this_frame:
             detected_class = detection['class']
-            if self.is_a_valid_recognition_event(detected_class):
-                people_seen_this_frame.add(detected_class)
+            if detected_class is None:
+                continue
+            (is_valid_recognition_event, event_recently_raised) = self.check_recognition_event(detected_class)
+            if is_valid_recognition_event:
                 self.raise_event(detection)
-
+            if event_recently_raised:
+                people_seen_this_frame.add(detected_class)
         self.poeple_seen_in_past_frames.append(people_seen_this_frame)
         self.poeple_seen_in_past_frames = self.get_last_n(self.poeple_seen_in_past_frames, MIN_NUMBER_OF_MISSES)
 
-    def is_a_valid_recognition_event(self, detected_class):
-        if detected_class is None:
-            return False
+    def check_recognition_event(self, detected_class):
         # N = MIN_NUMBER_OF_OCCURENCES
         # M = MIN_NUMBER_OF_MISSES
         # to raise recognition event: (a person...)
@@ -41,7 +42,9 @@ class Tracker(object):
         recognized_in_all_past_n_frames = all(detected_class in recognized_classes for recognized_classes in self.get_past_n_frame_detections())
         # - should not be part of a raised event in atleast past M frames
         raised_in_any_past_m_frames = any(detected_class in raised_classes for raised_classes in self.get_past_m_frame_events())
-        return recognized_in_all_past_n_frames and not raised_in_any_past_m_frames
+        is_valid_recognition_event = recognized_in_all_past_n_frames and not raised_in_any_past_m_frames
+        event_recently_raised = recognized_in_all_past_n_frames and raised_in_any_past_m_frames
+        return (is_valid_recognition_event, event_recently_raised)
 
     def raise_event(self, detection):
         self.messenger.publish_message(detection)
