@@ -41,7 +41,7 @@ class KnownFaceDetector():
         # predicted_class = self.classifier.predict_proba([rep])[0]
         result =  {
             'known': predicted_class != None,
-            'bb': bounding_box,
+            'bb': Rectangle(bounding_box.left(),bounding_box.top(),bounding_box.right(),bounding_box.bottom()),
             'class': predicted_class,
             'predicted_class': predicted_class,
             'nearest_class': nearest_class,
