@@ -7,18 +7,13 @@ import pickle
 from sklearn.naive_bayes import GaussianNB
 from utils import *
 import numpy as np
-import paho.mqtt.publish as publish
-import paho.mqtt.client as mqtt
 
 
 dlibFacePredictor = '/root/openface/models/dlib/shape_predictor_68_face_landmarks.dat' # TODO: possible perf improvement reduce landmarks
 scale = 2
 MIN_CONFIDENCE_THRESHOLD=0.9
 MAX_DISTANCE_THRESHOLD=0.5
-auth = {
-        'username':"socnhliq",
-        'password':"7wrIE_dxtWE6"
-    }
+
 class KnownFaceDetector():
     def __init__(self, trained_classifier_file="tw_coimbatore_faces_classifier", face_detector_class = DlibFaceDetector):
         start=time.time()
@@ -32,19 +27,6 @@ class KnownFaceDetector():
         self.classifier = load_file(trained_classifier_file)
         self.reps = load_file("reps")
         self.clusters = load_file("clusters")
-        print("Publishing event to subscriber")
-        auth = {
-            'username':"socnhliq",
-            'password':"7wrIE_dxtWE6"
-        }
-
-        publish.single("face/known",
-            payload = "Initialised",
-            hostname = "m11.cloudmqtt.com",
-            client_id = "publisher",
-            auth = auth,
-            port = 10833,
-            protocol = mqtt.MQTTv311)
 
     def identify_faces(self, image, max_faces=1):
         # returns [{known: false, bb: rect()}, {known: true, bb: rect(), representation: rep}]
@@ -67,7 +49,6 @@ class KnownFaceDetector():
             'landmarks': landmarks,
             'classifier_confidence': classifier_confidence
         }
-        publish_event("Face detected: Class - {}".format(predicted_class))
         return result
 
     def predict_cluster(self, rep):
@@ -120,12 +101,3 @@ def compute_mean_euclidean_distance(all_reps, clusters, face_rep, predicted_clus
 def distance_between(a,b):
     d = a.ravel() - b.ravel()
     return np.dot(d,d)
-
-def publish_event(result):
-    publish.single("face/known",
-        payload = result,
-        hostname = "m11.cloudmqtt.com",
-        client_id = "publisher",
-        auth = auth,
-        port = 10833,
-        protocol = mqtt.MQTTv311)

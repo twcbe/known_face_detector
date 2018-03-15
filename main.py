@@ -4,6 +4,7 @@ from opencv_video_source import OpencvVideoSource
 from imutils_video_source import ImutilsVideoSource
 from fps import Fps
 from display import DisplayWindow
+from tracker import Tracker
 from utils import *
 import time
 import cv2
@@ -15,12 +16,15 @@ camera = OpencvVideoSource(video_device_id=-1, use_thread=True).start_camera()
 detector = KnownFaceDetector(face_detector_class=DlibFaceDetector)
 # detector = KnownFaceDetector(face_detector_class=OpencvDnnFaceDetector)
 
+tracker = Tracker()
+
 display = DisplayWindow()
 fps = Fps()
 fps.start()
 
 not_ready_printed=False
 frame_number = 0
+
 
 while True:
 # while fps.elapsed()<15:
@@ -38,15 +42,13 @@ while True:
     # cv2.imwrite('./%04d.png' % frame_number, img)
 
     detected_faces = detector.identify_faces(img,100)
-    if len(detected_faces) > 0:
-        # cv2.imwrite('./%04d.png' % frame_number, cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
-        # raise event saying some face detected and if it is known face or not
-        # print("detected %d faces" % len(detected_faces))
-        # print(detected_faces)
-        pass
-    else:
-        # print("no faces detected")
-        pass
+    tracker.update(detected_faces)
+    # if len(detected_faces) > 0:
+    #     for detection in detected_faces:
+    #         publish_message(detection["class"], detection)
+    # else:
+    #     # print("no faces detected")
+    #     pass
     fps.update()
     # print("program: " + fps.info())
     # print("Camera: " + camera.fps.info())

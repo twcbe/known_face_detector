@@ -1,4 +1,5 @@
 import pickle
+import os
 
 def load_file(filename, extension='pkl'):
     with open(filename+"."+extension, 'rb') as file_handle:
@@ -6,8 +7,11 @@ def load_file(filename, extension='pkl'):
     return result
 
 def save_file(data, filename, extension='pkl'):
-    with open(filename+"."+extension, 'rb') as file_handle:
+    with open(filename+"."+extension, 'wb') as file_handle:
         pickle.dump(data, file_handle)
+
+def exists(filename, extension = "pkl"):
+    return os.path.exists(filename+"."+extension)
 
 class Rectangle(object):
     """ A rectangle with useful methods """
