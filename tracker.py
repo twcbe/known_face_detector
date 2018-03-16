@@ -29,10 +29,14 @@ class Tracker(object):
             (is_valid_recognition_event, event_recently_raised) = self.check_recognition_event(detected_class)
             if is_valid_recognition_event:
                 self.raise_event(detection)
+                people_seen_this_frame.add(detected_class)
             if event_recently_raised:
                 people_seen_this_frame.add(detected_class)
         self.poeple_seen_in_past_frames.append(people_seen_this_frame)
         self.poeple_seen_in_past_frames = self.get_last_n(self.poeple_seen_in_past_frames, MIN_NUMBER_OF_MISSES)
+
+
+
 
     def check_recognition_event(self, detected_class):
         # N = MIN_NUMBER_OF_OCCURENCES
@@ -47,7 +51,7 @@ class Tracker(object):
         return (is_valid_recognition_event, event_recently_raised)
 
     def raise_event(self, detection):
-        self.messenger.publish_message(detection)
+        self.messenger.publish_message_async(detection)
 
     def get_past_n_frame_detections(self):
         return self.get_last_n(self.classes_detected_in_past_frames, MIN_NUMBER_OF_OCCURENCES)

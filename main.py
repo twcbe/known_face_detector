@@ -1,7 +1,6 @@
 from known_face_detector import KnownFaceDetector
 from face_detector import *
-from opencv_video_source import OpencvVideoSource
-from imutils_video_source import ImutilsVideoSource
+from video_source import *
 from fps import Fps
 from display import DisplayWindow
 from tracker import Tracker
@@ -10,7 +9,8 @@ import time
 import cv2
 
 # [LEARNING]: OpencvVideoSource seems slightly faster
-camera = OpencvVideoSource(video_device_id=-1, use_thread=True).start_camera()
+camera = OpencvVideoSource(video_device_id=-1, use_thread=True, limit_frame_rate=True, resolution=(640, 480)).start_camera()
+# camera = OpencvVideoSource(video_device_id="./video.webm", use_thread=True, limit_frame_rate=True, resolution=(640, 480)).start_camera()
 # camera = ImutilsVideoSource(video_device_id=-1, use_thread=True).start_camera()
 
 detector = KnownFaceDetector(face_detector_class=DlibFaceDetector)
@@ -50,8 +50,7 @@ while True:
     #     # print("no faces detected")
     #     pass
     fps.update()
-    # print("program: " + fps.info())
-    # print("Camera: " + camera.fps.info())
+    print("program: " + fps.info())
+    print("Camera: " + camera.fps.info())
     display.show(bgr_image, detected_faces)
     time.sleep(0.01)
-    print("program: " + fps.info())
