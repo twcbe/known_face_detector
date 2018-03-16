@@ -1,0 +1,36 @@
+min distance: 0.567233
+set threshold: 0.4
+
+[correct, wrongly annotated] >> rep[ 712] cluster=13 final_prediction=   0 predicted_cluster=   0 distance=0.279840 confidence=0.999992 path=IMG_20170912_104516_1.png
+[correct, wrongly annotated] >> rep[ 154] cluster= 1 final_prediction=None predicted_cluster=  19 distance=0.478471 confidence=1.000000 path=DSC_5190_3.png
+
+
+Tripati predicted as Ashok by Classifier but caught by distance measure:
+√ >> rep[ 510] cluster=10 final_prediction=None predicted_cluster=   1 distance=0.743330 confidence=1.000000 path=IMG_3731_4.png
+√ >> rep[ 510] cluster=10 final_prediction=None predicted_cluster=   1 distance=0.743330 confidence=1.000000 path=Copy of IMG_3731_4.png
+√ >> rep[ 734] cluster=10 final_prediction=None predicted_cluster=   1 distance=0.675628 confidence=0.999326 path=IMG_2748_2.png
+√ >> rep[ 734] cluster=10 final_prediction=None predicted_cluster=   1 distance=0.675628 confidence=0.999326 path=Copy of IMG_2748_2.png
+
+Tripati predicted as Sathish by Classifier but caught by distance measure:
+√ >> rep[ 798] cluster=10 final_prediction=None predicted_cluster=   3 distance=0.567233 confidence=1.000000 path=Copy of IMG_6406_4.png
+√ >> rep[ 798] cluster=10 final_prediction=None predicted_cluster=   3 distance=0.567233 confidence=1.000000 path=IMG_6406_4.png
+
+
+
+0.408147 >> rep[ 916] cluster=19 final_prediction=None predicted_cluster=  19 distance=0.408147 confidence=1.000000 path=IMG_20170912_145717_16.png
+0.411503 >> rep[ 874] cluster= 2 final_prediction=None predicted_cluster=   2 distance=0.411503 confidence=1.000000 path=DSC_5185_0.png
+0.411511 >> rep[ 450] cluster= 7 final_prediction=None predicted_cluster=   7 distance=0.411511 confidence=1.000000 path=Copy of IMG_3731_10.png
+0.411511 >> rep[ 450] cluster= 7 final_prediction=None predicted_cluster=   7 distance=0.411511 confidence=1.000000 path=IMG_3731_10.png
+0.416092 >> rep[ 546] cluster= 4 final_prediction=None predicted_cluster=   4 distance=0.416092 confidence=1.000000 path=IMG_20170912_145040_4.png
+0.418162 >> rep[ 343] cluster= 6 final_prediction=None predicted_cluster=   6 distance=0.418162 confidence=1.000000 path=DSC_5216_0.png
+0.422848 >> rep[ 358] cluster=13 final_prediction=None predicted_cluster=  13 distance=0.422848 confidence=1.000000 path=DSC_5190_2.png
+0.425427 >> rep[ 751] cluster= 3 final_prediction=None predicted_cluster=   3 distance=0.425427 confidence=1.000000 path=IMG_20170912_104531_5.png
+0.426474 >> rep[ 960] cluster=12 final_prediction=None predicted_cluster=  12 distance=0.426474 confidence=1.000000 path=DSC_5143_0.png
+0.431116 >> rep[ 816] cluster= 6 final_prediction=None predicted_cluster=   6 distance=0.431116 confidence=1.000000 path=Copy of IMG_6682_0.png
+0.431116 >> rep[ 816] cluster= 6 final_prediction=None predicted_cluster=   6 distance=0.431116 confidence=1.000000 path=IMG_6682_0.png
+0.448942 >> rep[ 906] cluster= 3 final_prediction=None predicted_cluster=   3 distance=0.448942 confidence=1.000000 path=IMG_20170912_145721_12.png
+0.461194 >> rep[ 795] cluster=12 final_prediction=None predicted_cluster=  12 distance=0.461194 confidence=1.000000 path=IMG_20170912_172259_5.png
+0.471369 >> rep[ 856] cluster= 7 final_prediction=None predicted_cluster=   7 distance=0.471369 confidence=1.000000 path=IMG_20170912_172301_14.png
+0.505397 >> rep[ 588] cluster= 8 final_prediction=None predicted_cluster=   8 distance=0.505397 confidence=1.000000 path=IMG_20170912_145130_2.png
+0.562429 >> rep[ 703] cluster= 7 final_prediction=None predicted_cluster=   7 distance=0.562429 confidence=1.000000 path=IMG_20170912_172254_16.png
+0.563428 >> rep[ 978] cluster= 7 final_prediction=None predicted_cluster=   7 distance=0.563428 confidence=1.000000 path=IMG_20170912_172256_17.png

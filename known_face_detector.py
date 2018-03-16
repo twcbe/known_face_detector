@@ -15,10 +15,10 @@ MIN_CONFIDENCE_THRESHOLD=0.9
 MAX_DISTANCE_THRESHOLD=0.5
 
 class KnownFaceDetector():
-    def __init__(self, trained_classifier_file="tw_coimbatore_faces_classifier", face_detector_class = DlibFaceDetector):
+    def __init__(self, model, trained_classifier_file="tw_coimbatore_faces_classifier", face_detector_class = DlibFaceDetector):
         self.face_detector = face_detector_class()
         self.image_processor = ImageProcessor()
-        self.model = Model()
+        self.model = model
 
     def identify_faces(self, image, max_faces=1):
         # returns [{known: false, bb: rect()}, {known: true, bb: rect(), representation: rep}]

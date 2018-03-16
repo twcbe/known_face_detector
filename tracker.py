@@ -6,12 +6,12 @@ MIN_NUMBER_OF_MISSES = 50
 
 class Tracker(object):
     """docstring for Tracker"""
-    def __init__(self, messenger_class = MqttMessenger):
+    def __init__(self, messenger):
         super(Tracker, self).__init__()
         self.frames = []
         self.classes_detected_in_past_frames = []
         self.poeple_seen_in_past_frames = []
-        self.messenger = messenger_class()
+        self.messenger = messenger
 
     def update(self, face_detections_this_frame):
         self.frames.append(face_detections_this_frame)

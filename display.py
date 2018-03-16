@@ -24,15 +24,15 @@ class DisplayWindow(object):
             # cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.cv.CV_WINDOW_FULLSCREEN)
 
     # image parameter must be bgr image
-    def show(self, image, detected_faces):
-        for face in detected_faces:
-            bb = face['bb'] # dlib.rectangle
-            landmarks = face['landmarks']
+    def show(self, image, detections):
+        for detection in detections:
+            bb = detection['bb'] # dlib.rectangle
+            landmarks = detection['landmarks']
             cv2.rectangle(image,(bb.left(), bb.top()),(bb.right(), bb.bottom()),(128,200,200),1)
             bb_top_left=(bb.left(), bb.top()-2)
             forehead=landmarks[18]
             text_position = bb_top_left
-            name = get_name(face['class'])
+            name = get_name(detection)
             cv2.putText(image,'{}'.format(name), text_position, font, font_scale, (32,128,128), font_thickness+5)
             cv2.putText(image,'{}'.format(name), text_position, font, font_scale, (255,255,255), font_thickness)
             draw_landmarks(image, landmarks)
@@ -45,16 +45,8 @@ class DisplayWindow(object):
             #window is not visible
             thread.interrupt_main()
 
-def get_name(cluster):
-    name_mapping = {
-        0: "Sindhuja",
-        1: "Ashok",
-        3: "Sathish",
-        7: "Selva",
-    }
-    if cluster != None:
-        return name_mapping[cluster] if cluster in name_mapping else "cluster-{}".format(cluster)
-    return "Unknown"
+def get_name(detection):
+    return detection['predicted_person'] || "Unknown ({})".format(detection['closest_matching_person'])
 
 def draw_landmarks(image, landmarks):
     cv2.polylines(image, np.int32([landmarks[0:17]]),  0, (128,128,0),1) #face

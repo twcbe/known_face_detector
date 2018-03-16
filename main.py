@@ -3,6 +3,8 @@ from face_detector import *
 from video_source import *
 from fps import Fps
 from display import DisplayWindow
+from data import Dataset
+from model import Model
 from tracker import Tracker
 from utils import *
 import time
@@ -13,13 +15,17 @@ camera = OpencvVideoSource(video_device_id=-1, use_thread=True, limit_frame_rate
 # camera = OpencvVideoSource(video_device_id="./video.webm", use_thread=True, limit_frame_rate=True, resolution=(640, 480)).start_camera()
 # camera = ImutilsVideoSource(video_device_id=-1, use_thread=True).start_camera()
 
-detector = KnownFaceDetector(face_detector_class=DlibFaceDetector)
-# detector = KnownFaceDetector(face_detector_class=OpencvDnnFaceDetector)
+dataset = Dataset('./people_identifier.pkl')
+model = Model(dataset)
 
-tracker = Tracker()
+detector = KnownFaceDetector(model, face_detector_class=DlibFaceDetector)
+# detector = KnownFaceDetector(model, face_detector_class=OpencvDnnFaceDetector)
 
+messenger = MqttMessenger()
+tracker = Tracker(messenger)
 display = DisplayWindow()
 fps = Fps()
+
 fps.start()
 
 not_ready_printed=False

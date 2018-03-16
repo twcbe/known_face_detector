@@ -21,10 +21,8 @@ class MqttMessenger(object):
         self.thread.daemon = True
         self.thread.start()
 
-    def publish_message(self, payload):
-        print(">> Publishing event to subscriber ====================================")
-        topic = "face/known"
-        # print(json.dumps(payload))
+    def publish_message(self, payload, topic = "people_identifier/known_person_detected"):
+        print(">> Publishing event")
         publish.single(topic,
             payload = json.dumps(payload),
             hostname = mqtt_connection_details['host'],
@@ -41,8 +39,21 @@ class MqttMessenger(object):
         while True:
             self.event.wait()
             self.event.clear()
-            print("publishing messages in background>>>>>>>>>>>>>")
-            msgs=self.messages_to_publish
-            self.messages_to_publish=[]
+            (msgs, self.messages_to_publish) = (self.messages_to_publish, []) # use separate variable while publishing to reduce race conditions
             for msg in msgs:
                 self.publish_message(msg)
+
+    def listen_to(self, topic, callback_fn):
+        client = paho.mqtt.client.Client(mqtt_connection_details['client_id'])
+        client.username_pw_set(mqtt_connection_details['credentials']['username'], mqtt_connection_details['credentials']['password'])
+        client.on_connect = self.get_on_connect_handler(topic)
+        client.on_message = callback_fn
+        #client.tls_set('/etc/ssl/certs/DST_Root_CA_X3.pemtls_version=ssl.PROTOCOL_TLSv1_2)
+        client.connect(host=mqtt_connection_details['host'], port=mqtt_connection_details['port'])
+        client.loop_forever()
+
+    def get_on_connect_handler(self, topic):
+        def on_connect():
+            client.subscribe(topic=topic, qos=2)
+        return on_connect
+
