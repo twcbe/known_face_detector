@@ -17,13 +17,13 @@ class Tracker(object):
         self.frames.append(face_detections_this_frame)
         self.frames = self.frames[-MAX_NUMBER_OF_FRAMES_TO_PROCESS:]
 
-        classes_detected_this_frame = set([detection['class'] for detection in face_detections_this_frame])
+        classes_detected_this_frame = set([self.get_id(detection) for detection in face_detections_this_frame])
         self.classes_detected_in_past_frames.append(classes_detected_this_frame)
         self.classes_detected_in_past_frames = self.get_last_n(self.classes_detected_in_past_frames, MAX_NUMBER_OF_FRAMES_TO_PROCESS)
 
         people_seen_this_frame = set()
         for detection in face_detections_this_frame:
-            detected_class = detection['class']
+            detected_class = self.get_id(detection)
             if detected_class is None:
                 continue
             (is_valid_recognition_event, event_recently_raised) = self.check_recognition_event(detected_class)
@@ -37,6 +37,10 @@ class Tracker(object):
 
 
 
+    def get_id(self, detection):
+        if detection['predicted_person'] is None:
+            return None
+        return detection['predicted_person'].employee_id
 
     def check_recognition_event(self, detected_class):
         # N = MIN_NUMBER_OF_OCCURENCES

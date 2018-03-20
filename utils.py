@@ -3,6 +3,9 @@ import os
 import json
 
 def load_file(filename, extension='pkl'):
+    if not exists(filename):
+        return None
+
     with open(filename+"."+extension, 'rb') as file_handle:
         result = pickle.load(file_handle)
     return result
@@ -14,6 +17,11 @@ def save_file(data, filename, extension='pkl'):
 def exists(filename, extension = "pkl"):
     return os.path.exists(filename+"."+extension)
 
+
+def base64_to_image(encoded_data):
+    nparr = np.fromstring(encoded_data.decode('base64'), np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    return img
 
 class Object:
     def toJSON(self):

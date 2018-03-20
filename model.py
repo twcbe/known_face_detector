@@ -11,11 +11,16 @@ class Model(object):
 
     def train_classifier(self):
         (X, Y) = self.dataset.get_training_data()
-        gnb_classifer = GaussianNB()
-        gnb_classifer.fit(X,Y)
-        self.classifier = gnb_classifer
+        if len(Y) > 1:
+            gnb_classifer = GaussianNB()
+            gnb_classifer.fit(X,Y)
+            self.classifier = gnb_classifer
+        else:
+            self.classifier = None
 
     def predict(self, rep):
+        if self.classifier is None:
+            return (None, None, None)
         probabilities = self.classifier.predict_proba([rep])[0]
         high_confidence = probabilities > MIN_CONFIDENCE_THRESHOLD
         if np.count_nonzero(high_confidence) == 1:

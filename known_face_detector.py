@@ -25,7 +25,7 @@ class KnownFaceDetector():
         return [self.identify_face(image, bounding_box) for bounding_box in self.face_detector.detect_faces(image, max_faces)]
 
     def identify_face(self, image, bounding_box):
-        (aligned_face, landmarks, rep) = self.image_processor.get_representation(aligned_face, bounding_box)
+        (aligned_face, landmarks, rep) = self.image_processor.get_representation(image, bounding_box)
         (predicted_person, closest_matching_person, distance) = self.model.predict(rep)
         result =  {
             'known': predicted_person != None,
@@ -35,4 +35,5 @@ class KnownFaceDetector():
             'distance': distance,
             'landmarks': landmarks
         }
+        print(result)
         return result

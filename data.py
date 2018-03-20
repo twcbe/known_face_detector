@@ -3,13 +3,13 @@ import openface
 import cv2
 from face_detector import DlibFaceDetector
 from image_processor import ImageProcessor
+from threading import Thread
 
 class Person(dict):
-    def __init__(self, employee_id, name=None):
+    def __init__(self, employee_id, name=""):
         super({"name": name, "employee_id": employee_id}).__init__()
         self.name = name
         self.employee_id = employee_id
-        self.cluster_id = cluster_id
         self.representations = []
 
     def add_representation(self, rep):
@@ -18,10 +18,15 @@ class Person(dict):
 class Dataset:
     def __init__(self, saved_state_file_path = None):
         self.saved_state_file_path = saved_state_file_path
-        self.known_people = [] if saved_state_file_path is None else utils.load_file(self.saved_state_file_path)
         self.image_processor = ImageProcessor()
         self.on_data_change_handlers = []
         self.on_data_change(self.persist_state)
+        self.known_people = self.load_saved_state(saved_state_file_path)
+
+    def load_saved_state(self, saved_state_file_path):
+        if saved_state_file_path is None:
+            return []
+        return utils.load_file(self.saved_state_file_path) or []
 
     def persist_state(self):
         if saved_state_file_path is not None:
@@ -67,6 +72,7 @@ class Dataset:
             self.known_people.append(person)
         if name is not None or name == "":
             set_employee_details(employee_id, name)
+        self.changed()
         return person
 
     def get_person(employee_id):
@@ -95,16 +101,24 @@ class Dataset:
             handler()
 
 class DataUpdater(object):
-    def __init__(self, messenger, dataset):
+    def __init__(self, dataset, messenger):
         self.messenger = messenger
         self.dataset = dataset
 
     def listen(self):
+        listen_to_thread = Thread(target=self.subscribe_to_add, args = ())
+        listen_to_thread.daemon = True
+        listen_to_thread.start()
+
+    def subscribe_to_add(self):
         self.messenger.listen_to('add_person_detail', self.add_person_detail)
 
     def add_person_detail(self, payload):
-        employee_id = payload['employee_id']
-        name = payload['name'] # can be None or empty ""
-        representations = payload['representations'] # can be None or empty []
+        if 'employee_id' not in payload:
+            return
+        employee_id = payload.get('employee_id')
+        name = payload.get('name') # can be None or empty ""
+        representations = payload.get('representations') # can be None or empty []
+        
         self.dataset.add_person(employee_id, name)
         self.dataset.add_representations(employee_id, representations)

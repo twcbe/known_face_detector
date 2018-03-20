@@ -1,5 +1,6 @@
 import openface
 import time
+from known_face_detector import DlibFaceDetector
 
 class ImageProcessor:
     def __init__(self, face_detector_class = DlibFaceDetector, image_dimension=96, openface_model_path = '/root/openface/models/openface/nn4.small2.v1.t7', dlib_face_landmarks_model = '/root/openface/models/dlib/shape_predictor_68_face_landmarks.dat'):
