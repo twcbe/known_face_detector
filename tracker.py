@@ -40,7 +40,7 @@ class Tracker(object):
     def get_id(self, detection):
         if detection['predicted_person'] is None:
             return None
-        return detection['predicted_person'].employee_id
+        return detection['predicted_person']['employee_id']
 
     def check_recognition_event(self, detected_class):
         # N = MIN_NUMBER_OF_OCCURENCES

@@ -1,7 +1,10 @@
 from sklearn.naive_bayes import GaussianNB
 from image_processor import ImageProcessor
 from sklearn.naive_bayes import GaussianNB
+import numpy as np
 
+MIN_CONFIDENCE_THRESHOLD=0.9
+MAX_DISTANCE_THRESHOLD=0.5
 class Model(object):
     def __init__(self, dataset):
         self.dataset = dataset
@@ -10,7 +13,10 @@ class Model(object):
         self.dataset.on_data_change(self.train_classifier)
 
     def train_classifier(self):
+        print(">>> Re-Training classifier...")
         (X, Y) = self.dataset.get_training_data()
+        print(X)
+        print(Y)
         if len(Y) > 1:
             gnb_classifer = GaussianNB()
             gnb_classifer.fit(X,Y)
@@ -20,13 +26,19 @@ class Model(object):
 
     def predict(self, rep):
         if self.classifier is None:
+            print(">>> classifier is None")
             return (None, None, None)
         probabilities = self.classifier.predict_proba([rep])[0]
         high_confidence = probabilities > MIN_CONFIDENCE_THRESHOLD
+        predicted_cluster = None
+        closest_match = None
         if np.count_nonzero(high_confidence) == 1:
             nearest_class = np.where(high_confidence)[0][0]
             confidence = max(probabilities)
-            distance = compute_mean_euclidean_distance(self.reps, self.clusters, rep, nearest_class)
+            (all_reps, clusters) = self.dataset.get_training_data()
+            print(all_reps)
+            print(clusters)
+            distance = compute_mean_euclidean_distance(np.array(all_reps), np.array(clusters), rep, nearest_class)
             if distance < MAX_DISTANCE_THRESHOLD:
                 predicted_cluster = nearest_class
         predicted_person = self.dataset.get_person_with_cluster_id(predicted_cluster)
@@ -34,6 +46,7 @@ class Model(object):
         return (predicted_person, closest_match, distance)
 
 def compute_mean_euclidean_distance(all_reps, clusters, face_rep, predicted_cluster):
+    print(clusters==predicted_cluster)
     predicted_cluster_reps = all_reps[clusters==predicted_cluster]
 
     distances = np.array([distance_between(rep, face_rep) for rep in predicted_cluster_reps])

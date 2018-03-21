@@ -1,6 +1,8 @@
 import pickle
 import os
 import json
+import cv2
+import numpy as np
 
 def load_file(filename, extension='pkl'):
     if not exists(filename):
@@ -19,9 +21,17 @@ def exists(filename, extension = "pkl"):
 
 
 def base64_to_image(encoded_data):
+    if encoded_data is None:
+        return None
     nparr = np.fromstring(encoded_data.decode('base64'), np.uint8)
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
     return img
+
+def rgb2bgr(image):
+    return cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+
+def bgr2rgb(image):
+    return cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
 class Object:
     def toJSON(self):

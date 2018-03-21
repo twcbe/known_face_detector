@@ -4,16 +4,19 @@ import cv2
 from face_detector import DlibFaceDetector
 from image_processor import ImageProcessor
 from threading import Thread
+from utils import *
 
-class Person(dict):
+class Person(object):
     def __init__(self, employee_id, name=""):
-        super({"name": name, "employee_id": employee_id}).__init__()
         self.name = name
         self.employee_id = employee_id
         self.representations = []
 
     def add_representation(self, rep):
         self.representations.append(rep)
+
+    def serialize(self):
+        return {"name": self.name, "employee_id": self.employee_id}
 
 class Dataset:
     def __init__(self, saved_state_file_path = None):
@@ -26,10 +29,11 @@ class Dataset:
     def load_saved_state(self, saved_state_file_path):
         if saved_state_file_path is None:
             return []
-        return utils.load_file(self.saved_state_file_path) or []
+        return utils.load_file(saved_state_file_path) or []
 
     def persist_state(self):
-        if saved_state_file_path is not None:
+        if self.saved_state_file_path is not None:
+            print(">>> Saving known people dataset")
             utils.save_file(self.known_people, self.saved_state_file_path)
 
     def get_training_data(self):
@@ -44,7 +48,7 @@ class Dataset:
     def set_employee_details(self, employee_id, name):
         self.create_or_get_person(employee_id).name = name
 
-    def create_or_get_person(employee_id):
+    def create_or_get_person(self, employee_id):
         return self.get_person(employee_id) or self.add_person(employee_id)
 
     def add_representation(self, employee_id, representation):
@@ -62,7 +66,9 @@ class Dataset:
         self.changed()
 
     def add_representation_given_image(self, employee_id, image):
-        rep = self.image_processor.get_representation(image)
+        if image is None:
+            return
+        (_, _, rep) = self.image_processor.get_representation(image)
         self.add_representation(employee_id, rep)
 
     def add_person(self, employee_id, name=None):
@@ -70,21 +76,23 @@ class Dataset:
         if person is None:
             person = Person(employee_id, name)
             self.known_people.append(person)
-        if name is not None or name == "":
-            set_employee_details(employee_id, name)
+        elif name is not None or name != "":
+                person.name = name
         self.changed()
         return person
 
-    def get_person(employee_id):
+    def get_person(self, employee_id):
         employee_id_to_person_map = self.employee_id_to_person_map()
         if employee_id in employee_id_to_person_map:
             return employee_id_to_person_map[employee_id]
         return None
 
-    def get_person_with_cluster_id(cluster_id):
+    def get_person_with_cluster_id(self, cluster_id):
+        print("self.known_people")
+        print(self.known_people)
         cluster_id_to_person_map = self.cluster_id_to_person_map()
-        if employee_id in cluster_id_to_person_map:
-            return cluster_id_to_person_map[employee_id]
+        if cluster_id in cluster_id_to_person_map:
+            return cluster_id_to_person_map[cluster_id]
         return None
 
     def employee_id_to_person_map(self):
@@ -119,6 +127,7 @@ class DataUpdater(object):
         employee_id = payload.get('employee_id')
         name = payload.get('name') # can be None or empty ""
         representations = payload.get('representations') # can be None or empty []
-        
+        image = base64_to_image(payload.get('image')) # can be None
         self.dataset.add_person(employee_id, name)
         self.dataset.add_representations(employee_id, representations)
+        self.dataset.add_representation_given_image(employee_id, image)

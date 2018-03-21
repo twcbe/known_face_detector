@@ -1,6 +1,7 @@
 import openface
 import time
-from known_face_detector import DlibFaceDetector
+from face_detector import DlibFaceDetector
+from utils import *
 
 class ImageProcessor:
     def __init__(self, face_detector_class = DlibFaceDetector, image_dimension=96, openface_model_path = '/root/openface/models/openface/nn4.small2.v1.t7', dlib_face_landmarks_model = '/root/openface/models/dlib/shape_predictor_68_face_landmarks.dat'):
@@ -9,12 +10,12 @@ class ImageProcessor:
         self.face_aligner = openface.AlignDlib(dlib_face_landmarks_model)
         self.image_dimension = image_dimension
 
-    def get_representation(self, image):
-        bounding_box = self.face_detector.detect_faces(image, max_faces=1)[0]
-        (aligned_face, landmarks, rep) = get_representation(image, bounding_box)
-        return rep
-
-    def get_representation(self, image, bounding_box):
+    def get_representation(self, image, bounding_box=None):
+        if bounding_box is None:
+            cv2.imwrite("test.png", image)
+            a= self.face_detector.detect_faces(rgb2bgr(image), max_faces=1)
+            print(a)
+            bounding_box = a[0]
         (aligned_face, landmarks) = self.align_face(image, bounding_box)
         if aligned_face is None:
             return (None, None, None)

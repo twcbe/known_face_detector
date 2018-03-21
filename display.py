@@ -46,7 +46,13 @@ class DisplayWindow(object):
             thread.interrupt_main()
 
 def get_name(detection):
-    return detection['predicted_person'] or "Unknown ({})".format(detection['closest_matching_person'])
+    person = detection['predicted_person']
+    if person is not None:
+        return person['name']
+    closest = detection['closest_matching_person'] 
+    if closest is not None:
+        return "Unknown (closest:{})".format(closest["name"])
+    return "Unknown"
 
 def draw_landmarks(image, landmarks):
     cv2.polylines(image, np.int32([landmarks[0:17]]),  0, (128,128,0),1) #face

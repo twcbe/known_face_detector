@@ -11,8 +11,6 @@ from image_processor import ImageProcessor
 
 dlibFacePredictor = '/root/openface/models/dlib/shape_predictor_68_face_landmarks.dat' # TODO: possible perf improvement reduce landmarks
 scale = 2
-MIN_CONFIDENCE_THRESHOLD=0.9
-MAX_DISTANCE_THRESHOLD=0.5
 
 class KnownFaceDetector():
     def __init__(self, model, trained_classifier_file="tw_coimbatore_faces_classifier", face_detector_class = DlibFaceDetector):
@@ -27,13 +25,13 @@ class KnownFaceDetector():
     def identify_face(self, image, bounding_box):
         (aligned_face, landmarks, rep) = self.image_processor.get_representation(image, bounding_box)
         (predicted_person, closest_matching_person, distance) = self.model.predict(rep)
+        print(predicted_person)
         result =  {
             'known': predicted_person != None,
             'bb': Rectangle(bounding_box.left(),bounding_box.top(),bounding_box.right(),bounding_box.bottom()),
-            'predicted_person': predicted_person,
-            'closest_matching_person': closest_matching_person,
+            'predicted_person': predicted_person and predicted_person.serialize(),
+            'closest_matching_person': closest_matching_person and closest_matching_person.serialize(),
             'distance': distance,
             'landmarks': landmarks
         }
-        print(result)
         return result

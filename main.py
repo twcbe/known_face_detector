@@ -53,6 +53,7 @@ while True:
 
     detected_faces = detector.identify_faces(img,100)
     tracker.update(detected_faces)
+    print(detected_faces)
     # if len(detected_faces) > 0:
     #     for detection in detected_faces:
     #         publish_message(detection["class"], detection)
