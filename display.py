@@ -5,6 +5,8 @@ font = cv2.FONT_HERSHEY_SIMPLEX
 font_thickness = 2
 font_scale = .75
 window_name = "imageView"
+detection_color = {  True: [(32,128,128), (255,255,255)], #BGR
+                    False: [(255,64,64), (255,200,200)] }
 
 class DisplayWindow(object):
     """A class that encapsulates a display that can show face images with some overlayed content"""
@@ -33,12 +35,15 @@ class DisplayWindow(object):
             forehead=landmarks[18]
             text_position = bb_top_left
             name = get_name(detection)
-            cv2.putText(image,'{}'.format(name), text_position, font, font_scale, (32,128,128), font_thickness+5)
-            cv2.putText(image,'{}'.format(name), text_position, font, font_scale, (255,255,255), font_thickness)
+            self.display_text(image, name, text_position, detection_color[detection.get('event_raised', False)])
             draw_landmarks(image, landmarks)
         self.terminate_if_window_closed()
         cv2.imshow(window_name, image)
         cv2.waitKey(1) # needed to actually show window onscreen. 
+
+    def display_text(self, image, text, text_position,  color):
+        cv2.putText(image, text, text_position, font, font_scale, color[0], font_thickness+5)
+        cv2.putText(image, text, text_position, font, font_scale, color[1], font_thickness)
 
     def terminate_if_window_closed(self):
         if cv2.getWindowProperty(window_name, 0) < 0 and self.terminate_on_close:

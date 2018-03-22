@@ -88,8 +88,6 @@ class Dataset:
         return None
 
     def get_person_with_cluster_id(self, cluster_id):
-        print("self.known_people")
-        print(self.known_people)
         cluster_id_to_person_map = self.cluster_id_to_person_map()
         if cluster_id in cluster_id_to_person_map:
             return cluster_id_to_person_map[cluster_id]

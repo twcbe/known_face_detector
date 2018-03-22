@@ -32,6 +32,7 @@ class Tracker(object):
                 people_seen_this_frame.add(detected_class)
             if event_recently_raised:
                 people_seen_this_frame.add(detected_class)
+                detected_class['event_raised']=True
         self.poeple_seen_in_past_frames.append(people_seen_this_frame)
         self.poeple_seen_in_past_frames = self.get_last_n(self.poeple_seen_in_past_frames, MIN_NUMBER_OF_MISSES)
 

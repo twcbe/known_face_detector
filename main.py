@@ -13,7 +13,7 @@ from messenger import MqttMessenger
 
 
 # [LEARNING]: OpencvVideoSource seems slightly faster
-camera = OpencvVideoSource(video_device_id=-1, use_thread=True, limit_frame_rate=True, resolution=(640, 480)).start_camera()
+camera = OpencvVideoSource(video_device_id=-1, use_thread=True, limit_frame_rate=False, resolution=(640, 480)).start_camera()
 # camera = OpencvVideoSource(video_device_id="./video.webm", use_thread=True, limit_frame_rate=True, resolution=(640, 480)).start_camera()
 # camera = ImutilsVideoSource(video_device_id=-1, use_thread=True).start_camera()
 
@@ -53,15 +53,9 @@ while True:
 
     detected_faces = detector.identify_faces(img,100)
     tracker.update(detected_faces)
-    print(detected_faces)
-    # if len(detected_faces) > 0:
-    #     for detection in detected_faces:
-    #         publish_message(detection["class"], detection)
-    # else:
-    #     # print("no faces detected")
-    #     pass
+    display.show(bgr_image, detected_faces)
+    # print(detected_faces)
     fps.update()
     print("program: " + fps.info())
     print("Camera: " + camera.fps.info())
-    display.show(bgr_image, detected_faces)
     time.sleep(0.01)
