@@ -31,8 +31,8 @@ class Model(object):
         probabilities = self.classifier.predict_proba([rep])[0]
         high_confidence = probabilities > MIN_CONFIDENCE_THRESHOLD
         predicted_cluster = None
-        closest_match = None
         nearest_class = None
+        distance = None
         if np.count_nonzero(high_confidence) == 1:
             nearest_class = np.where(high_confidence)[0][0]
             confidence = max(probabilities)

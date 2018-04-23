@@ -5,8 +5,8 @@ font = cv2.FONT_HERSHEY_SIMPLEX
 font_thickness = 2
 font_scale = .75
 window_name = "imageView"
-detection_color = {  True: [(32,128,128), (255,255,255)], #BGR
-                    False: [(255,64,64), (255,200,200)] }
+detection_color = {  True: [(255,128,64), (255,255,255)],  #BGR  [outline, color]
+                    False: [(64,64,128), (128,128,255)] }
 
 class DisplayWindow(object):
     """A class that encapsulates a display that can show face images with some overlayed content"""
