@@ -18,6 +18,12 @@ class Person(object):
     def serialize(self):
         return {"name": self.name, "employee_id": self.employee_id}
 
+    def __repr__(self):
+        return "<{}: {} representations>".format(self.name, len(self.representations))
+
+    def __str__(self):
+        return self.__repr__()
+
 class Dataset:
     def __init__(self, saved_state_file_path = None):
         self.saved_state_file_path = saved_state_file_path
@@ -25,6 +31,8 @@ class Dataset:
         self.on_data_change_handlers = []
         self.on_data_change(self.persist_state)
         self.known_people = self.load_saved_state(saved_state_file_path)
+        print("number of entries in known_people dataset: {}".format(len(self.known_people)))
+        print("known_people dataset: {}".format(self.known_people))
 
     def load_saved_state(self, saved_state_file_path):
         if saved_state_file_path is None:
@@ -34,6 +42,8 @@ class Dataset:
     def persist_state(self):
         if self.saved_state_file_path is not None:
             print(">>> Saving known people dataset")
+            print(">> updated number of entries in known_people dataset: {}".format(len(self.known_people)))
+            print("known_people dataset: {}".format(self.known_people))
             utils.save_file(self.known_people, self.saved_state_file_path)
 
     def get_training_data(self):
@@ -107,9 +117,10 @@ class Dataset:
             handler()
 
 class DataUpdater(object):
-    def __init__(self, dataset, messenger):
+    def __init__(self, dataset, messenger, current_image_lambda):
         self.messenger = messenger
         self.dataset = dataset
+        self.current_image_lambda = current_image_lambda
 
     def listen(self):
         listen_to_thread = Thread(target=self.subscribe_to_add, args = ())
@@ -124,8 +135,14 @@ class DataUpdater(object):
             return
         employee_id = payload.get('employee_id')
         name = payload.get('name') # can be None or empty ""
-        representations = payload.get('representations') # can be None or empty []
-        image = base64_to_image(payload.get('image')) # can be None
+        image = None
+        representations=None
+        if payload.get('add_current_person_detail'):
+            image = self.current_image_lambda()
+        else:
+            representations = payload.get('representations') # can be None or empty []
+            image = base64_to_image(payload.get('image')) # can be None
+
         self.dataset.add_person(employee_id, name)
         self.dataset.add_representations(employee_id, representations)
         self.dataset.add_representation_given_image(employee_id, image)

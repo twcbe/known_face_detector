@@ -26,7 +26,7 @@ detector = KnownFaceDetector(model, face_detector_class=DlibFaceDetector)
 messenger = MqttMessenger()
 tracker = Tracker(messenger)
 display = DisplayWindow()
-updater = DataUpdater(dataset, messenger)
+updater = DataUpdater(dataset, messenger, lambda : camera.get_rgb_bgr_image()[0])
 fps = Fps()
 
 fps.start()

@@ -4,7 +4,8 @@ from sklearn.naive_bayes import GaussianNB
 import numpy as np
 
 MIN_CONFIDENCE_THRESHOLD=0.9
-MAX_DISTANCE_THRESHOLD=0.5
+MAX_DISTANCE_THRESHOLD=0.25
+
 class Model(object):
     def __init__(self, dataset):
         self.dataset = dataset
@@ -15,6 +16,7 @@ class Model(object):
     def train_classifier(self):
         print(">>> Re-Training classifier...")
         (X, Y) = self.dataset.get_training_data()
+        print(">>> dataset length {}".format(len(X)))
         if len(Y) > 1:
             gnb_classifer = GaussianNB()
             gnb_classifer.fit(X,Y)
@@ -30,6 +32,7 @@ class Model(object):
         high_confidence = probabilities > MIN_CONFIDENCE_THRESHOLD
         predicted_cluster = None
         closest_match = None
+        nearest_class = None
         if np.count_nonzero(high_confidence) == 1:
             nearest_class = np.where(high_confidence)[0][0]
             confidence = max(probabilities)
@@ -45,7 +48,7 @@ def compute_mean_euclidean_distance(all_reps, clusters, face_rep, predicted_clus
     predicted_cluster_reps = all_reps[clusters==predicted_cluster]
 
     distances = np.array([distance_between(rep, face_rep) for rep in predicted_cluster_reps])
-    average_distance = np.average(distances)
+    average_distance = np.min(distances)
     return average_distance
 
 def distance_between(a,b):
