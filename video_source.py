@@ -65,7 +65,7 @@ class OpencvVideoSource(object):
 
     def get_image(self):
         if not self.use_thread:
-            ret, self._image = self.grab_frame()
+            self._image = self.grab_frame()
             self.fps.update()
         # if self._image is None:
         #     return None

@@ -45,7 +45,7 @@ class Model(object):
         return (predicted_person, closest_match, distance)
 
 def compute_mean_euclidean_distance(all_reps, clusters, face_rep, predicted_cluster):
-    predicted_cluster_reps = all_reps[clusters==predicted_cluster]
+    predicted_cluster_reps = all_reps[clusters==predicted_cluster] # TODO: issue - possible to be empty? when training new faces.
 
     distances = np.array([distance_between(rep, face_rep) for rep in predicted_cluster_reps])
     average_distance = np.min(distances)
