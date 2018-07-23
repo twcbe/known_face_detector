@@ -1,21 +1,23 @@
 from messenger import MqttMessenger
 
 MIN_NUMBER_OF_OCCURENCES = 3
-MAX_NUMBER_OF_FRAMES_TO_PROCESS = 20
+MAX_NUMBER_OF_FRAMES_TO_PROCESS = 20  # just buffer size. should be greater than or equal to MIN_NUMBER_OF_OCCURENCES
 MIN_NUMBER_OF_MISSES = 50
 
 class Tracker(object):
     """docstring for Tracker"""
     def __init__(self, messenger):
         super(Tracker, self).__init__()
-        self.frames = []
+        # TODO: not used:
+        # self.frames = []
         self.classes_detected_in_past_frames = []
-        self.poeple_seen_in_past_frames = []
+        self.people_seen_in_past_frames = []
         self.messenger = messenger
 
     def update(self, face_detections_this_frame):
-        self.frames.append(face_detections_this_frame)
-        self.frames = self.frames[-MAX_NUMBER_OF_FRAMES_TO_PROCESS:]
+        # TODO: not used:
+        # self.frames.append(face_detections_this_frame)
+        # self.frames = self.frames[-MAX_NUMBER_OF_FRAMES_TO_PROCESS:]
 
         classes_detected_this_frame = set([self.get_id(detection) for detection in face_detections_this_frame])
         self.classes_detected_in_past_frames.append(classes_detected_this_frame)
@@ -34,8 +36,8 @@ class Tracker(object):
             if event_recently_raised:
                 people_seen_this_frame.add(detected_class)
                 detection['event_raised']=True
-        self.poeple_seen_in_past_frames.append(people_seen_this_frame)
-        self.poeple_seen_in_past_frames = self.get_last_n(self.poeple_seen_in_past_frames, MIN_NUMBER_OF_MISSES)
+        self.people_seen_in_past_frames.append(people_seen_this_frame)
+        self.people_seen_in_past_frames = self.get_last_n(self.people_seen_in_past_frames, MIN_NUMBER_OF_MISSES)
 
 
 
@@ -63,7 +65,7 @@ class Tracker(object):
         return self.get_last_n(self.classes_detected_in_past_frames, MIN_NUMBER_OF_OCCURENCES)
 
     def get_past_m_frame_events(self):
-        return self.get_last_n(self.poeple_seen_in_past_frames, MIN_NUMBER_OF_MISSES)
+        return self.get_last_n(self.people_seen_in_past_frames, MIN_NUMBER_OF_MISSES)
 
     def get_last_n(self, array, n):
         return array[-n:]
