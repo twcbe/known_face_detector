@@ -3,6 +3,14 @@ import os
 import json
 import cv2
 import numpy as np
+import os
+
+environment = os.environ.get('ENV') or 'development'
+with open("config/settings/%s.json" % environment) as f:
+    settings = json.load(f)
+
+def get_settings():
+    return settings
 
 def load_file(filename, extension='pkl'):
     if not exists(filename):

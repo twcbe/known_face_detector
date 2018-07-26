@@ -1,0 +1,13 @@
+{
+  "mqtt": {
+    "host": "localhost",
+    "port": 1883,
+    "client_id": "Main Entrance People Identifier",
+    "topic": "people_identifier/known_person_detected",
+    "credentials": {
+      "username": " ",
+      "password": " "
+    }
+  },
+  "source_name": "Main Entrance:enter"
+}

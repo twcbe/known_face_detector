@@ -31,7 +31,7 @@ class Tracker(object):
                 continue
             (is_valid_recognition_event, event_recently_raised) = self.check_recognition_event(detected_class)
             if is_valid_recognition_event:
-                self.raise_event(detection)
+                self.raise_event(detection['predicted_person'])
                 people_seen_this_frame.add(detected_class)
             if event_recently_raised:
                 people_seen_this_frame.add(detected_class)
