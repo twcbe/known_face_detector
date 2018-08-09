@@ -1,0 +1,69 @@
+version: 2
+jobs:
+  security-checks:
+    working_directory: ~/repo
+    docker:
+      - image: docker:stable
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          command: sh ci/security-checks.sh
+      - store_artifacts:
+          path: /tmp/artifacts/hawkeye_report.json
+  build:
+    docker:
+      - image: docker:stable
+    steps:
+      - run:
+          command: echo "here goes your build steps"
+
+  tests:
+    docker:
+      - image: docker:stable
+    steps:
+      - run:
+          command: echo "here goes your tests steps"
+
+  deploy-staging:
+    working_directory: ~/repo
+    docker:
+      - image: docker:stable-git
+    steps:
+      - checkout
+      - run:
+          command: echo "here goes your deploy to staging steps"
+
+  deploy-production:
+    working_directory: ~/repo
+    docker:
+      - image: docker:stable-git
+    steps:
+      - checkout
+      - run:
+          command: echo "here goes your deploy to production steps"
+
+workflows:
+  version: 2
+  build-test-deploy:
+    jobs:
+      - security-checks
+      - build:
+          requires:
+            - security-checks
+      - tests:
+          requires:
+            - build
+      - deploy-staging:
+          requires:
+            - tests
+          filters:
+            branches:
+              only: master
+      - deploy-production:
+          type: approval
+          requires:
+            - deploy-staging
+          filters:
+            branches:
+              only: master
