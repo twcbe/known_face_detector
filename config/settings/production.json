@@ -2,12 +2,12 @@
   "mqtt": {
     "host": "10.137.120.19",
     "port": 1883,
-    "client_id": "Main Entrance People Identifier",
+    "client_id": "Main entrance people identifier",
     "topic": "face_recognition",
     "credentials": {
       "username": " ",
       "password": " "
     }
   },
-  "source_name": "Main Entrance:enter"
+  "source_name": "Main entrance:enter"
 }

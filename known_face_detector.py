@@ -3,7 +3,6 @@ import openface
 import dlib
 import cv2
 import time
-import pickle
 from utils import *
 import numpy as np
 from image_processor import ImageProcessor

@@ -1,4 +1,3 @@
-import pickle
 import os
 import json
 import cv2
@@ -12,19 +11,19 @@ with open("config/settings/%s.json" % environment) as f:
 def get_settings():
     return settings
 
-def load_file(filename, extension='pkl'):
-    if not exists(filename):
+def load_file(filename, extension='json'):
+    if not exists(filename, extension):
         return None
 
     with open(filename+"."+extension, 'rb') as file_handle:
-        result = pickle.load(file_handle)
+        result = json.load(file_handle)
     return result
 
-def save_file(data, filename, extension='pkl'):
+def save_file(data, filename, extension='json'):
     with open(filename+"."+extension, 'wb') as file_handle:
-        pickle.dump(data, file_handle)
+        json.dump(data, file_handle)
 
-def exists(filename, extension = "pkl"):
+def exists(filename, extension):
     return os.path.exists(filename+"."+extension)
 
 

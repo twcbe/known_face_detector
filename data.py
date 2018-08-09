@@ -7,10 +7,10 @@ from threading import Thread
 from utils import *
 
 class Person(object):
-    def __init__(self, employee_id, name=""):
+    def __init__(self, employee_id, name = "", representations = []):
         self.name = name
         self.employee_id = employee_id
-        self.representations = []
+        self.representations = representations
 
     def add_representation(self, rep):
         self.representations.append(rep)
@@ -37,14 +37,21 @@ class Dataset:
     def load_saved_state(self, saved_state_file_path):
         if saved_state_file_path is None:
             return []
-        return utils.load_file(saved_state_file_path) or []
+        known_people_data = utils.load_file(saved_state_file_path) or []
+        return [Person(person_data.get('employee_id'),
+                       person_data.get('name'),
+                       [np.array(rep) for rep in person_data.get('representations')]) for person_data in known_people_data]
 
     def persist_state(self):
         if self.saved_state_file_path is not None:
             print(">>> Saving known people dataset")
             print(">> updated number of entries in known_people dataset: {}".format(len(self.known_people)))
             print("known_people dataset: {}".format(self.known_people))
-            utils.save_file(self.known_people, self.saved_state_file_path)
+            known_people_data = [{"employee_id": person.employee_id,
+                                  "name": person.name,
+                                  "representations": [rep.tolist() for rep in person.representations]}
+                                  for person in self.known_people]
+            utils.save_file(known_people_data, self.saved_state_file_path)
 
     def get_training_data(self):
         X=[] # representations
@@ -90,6 +97,10 @@ class Dataset:
                 person.name = name
         self.changed()
         return person
+
+    def remove_person(self, employee_id):
+        self.known_people = [person for person in self.known_people
+                                    if person.employee_id != employee_id]
 
     def get_person(self, employee_id):
         employee_id_to_person_map = self.employee_id_to_person_map()
