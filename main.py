@@ -11,9 +11,13 @@ import time
 import cv2
 from messenger import MqttMessenger
 
+print(">>> Starting in %s environment" % (current_env()))
+
+video_device = env_variable('video_device', -1)
+enable_display = env_variable('enable_display', False)
 
 # [LEARNING]: OpencvVideoSource seems slightly faster
-camera = OpencvVideoSource(video_device_id=-1, use_thread=True, limit_frame_rate=False, resolution=(640, 480)).start_camera()
+camera = OpencvVideoSource(video_device_id=video_device, use_thread=True, limit_frame_rate=False, resolution=(640, 480)).start_camera()
 # camera = OpencvVideoSource(video_device_id="./video.webm", use_thread=True, limit_frame_rate=True, resolution=(640, 480)).start_camera()
 # camera = ImutilsVideoSource(video_device_id=-1, use_thread=True).start_camera()
 
@@ -25,9 +29,10 @@ detector = KnownFaceDetector(model, face_detector_class=DlibFaceDetector)
 
 messenger = MqttMessenger()
 tracker = Tracker(messenger)
-display = DisplayWindow()
 updater = DataUpdater(dataset, messenger, lambda : camera.get_rgb_bgr_image()[0])
 fps = Fps()
+if enable_display:
+    display = DisplayWindow()
 
 fps.start()
 updater.listen()
@@ -53,7 +58,8 @@ while True:
 
     detected_faces = detector.identify_faces(img,100)
     tracker.update(detected_faces)
-    display.show(bgr_image, detected_faces)
+    if enable_display:
+        display.show(bgr_image, detected_faces)
     # print(detected_faces)
     fps.update()
     print("program: " + fps.info())

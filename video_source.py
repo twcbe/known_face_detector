@@ -20,7 +20,7 @@ class OpencvVideoSource(object):
     def start_camera(self):
         start = time.time()
         self.cap = cv2.VideoCapture(self.video_device_id)
-        print('>>> opened VideoCapture in %.3f seconds' % (time.time() - start))
+        print('>>> opened VideoCapture (%s) in %.3f seconds' % (self.video_device_id, time.time() - start))
         # subprocess.check_output(['bash', '-c', 'v4l2-ctl -c backlight_compensation=1,sharpness=130,power_line_frequency=1,white_balance_temperature_auto=1,saturation=128,contrast=128,brightness=128,focus_absolute=0,focus_auto=0'])
         self.running = True
         if self.use_thread:

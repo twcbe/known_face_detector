@@ -1,69 +1,38 @@
+# Ruby CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-ruby/ for more details
+#
 version: 2
 jobs:
-  security-checks:
-    working_directory: ~/repo
-    docker:
-      - image: docker:stable
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run:
-          command: sh ci/security-checks.sh
-      - store_artifacts:
-          path: /tmp/artifacts/hawkeye_report.json
   build:
     docker:
-      - image: docker:stable
-    steps:
-      - run:
-          command: echo "here goes your build steps"
+      - image: bamos/openface
 
-  tests:
-    docker:
-      - image: docker:stable
-    steps:
-      - run:
-          command: echo "here goes your tests steps"
-
-  deploy-staging:
-    working_directory: ~/repo
-    docker:
-      - image: docker:stable-git
+    working_directory: /known_face_detector
     steps:
       - checkout
-      - run:
-          command: echo "here goes your deploy to staging steps"
+      # - restore_cache:
+      #     keys:
+      #     - v1-dependencies-{{ checksum "Gemfile.lock" }}
+      #     # fallback to using the latest cache if no exact match is found
+      #     - v1-dependencies-
 
-  deploy-production:
-    working_directory: ~/repo
-    docker:
-      - image: docker:stable-git
-    steps:
-      - checkout
-      - run:
-          command: echo "here goes your deploy to production steps"
+      # - run:
+      #     name: install dependencies
+      #     command: |
+      #       bundle install --jobs=4 --retry=3 --path vendor/bundle
 
-workflows:
-  version: 2
-  build-test-deploy:
-    jobs:
-      - security-checks
-      - build:
-          requires:
-            - security-checks
-      - tests:
-          requires:
-            - build
-      - deploy-staging:
-          requires:
-            - tests
-          filters:
-            branches:
-              only: master
-      - deploy-production:
-          type: approval
-          requires:
-            - deploy-staging
-          filters:
-            branches:
-              only: master
+      # - save_cache:
+      #     paths:
+      #       - ./vendor/bundle
+      #     key: v1-dependencies-{{ checksum "Gemfile.lock" }}
+
+      # # Database setup
+      # - run: ./bin/rails db:create
+      # - run: ./bin/rails db:schema:load
+
+      # # run tests!
+      # - run:
+      #     name: run tests
+      #     command: |
+      #       bundle exec rake test -v --backtrace

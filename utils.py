@@ -4,11 +4,20 @@ import cv2
 import numpy as np
 import os
 
-environment = os.environ.get('ENV') or 'development'
-with open("config/settings/%s.json" % environment) as f:
-    settings = json.load(f)
+def load_env_config():
+    environment = current_env()
+    with open("config/settings/%s.json" % environment) as f:
+        global settings
+        settings = json.load(f)
+
+def current_env():
+    return env_variable('ENV', 'development')
+
+def env_variable(key, default = None):
+    return os.environ.get(key) or default
 
 def get_settings():
+    global settings
     return settings
 
 def load_file(filename, extension='json'):
@@ -78,3 +87,5 @@ class Rectangle(list):
 
     def toJSON(self):
         return json.dumps([x1,y1,x2,y2])
+
+load_env_config()
