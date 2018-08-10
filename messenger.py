@@ -30,12 +30,15 @@ class MqttMessenger(object):
         self.event.set()
 
     def background_publish_messages(self):
-        while True:
-            self.event.wait()
-            self.event.clear()
-            (msgs, self.messages_to_publish) = (self.messages_to_publish, []) # use separate variable while publishing to reduce race conditions
-            for msg in msgs:
-                self.publish_message(msg, get_settings()['mqtt']['topic'])
+        try:
+            while True:
+                self.event.wait()
+                self.event.clear()
+                (msgs, self.messages_to_publish) = (self.messages_to_publish, []) # use separate variable while publishing to reduce race conditions
+                for msg in msgs:
+                    self.publish_message(msg, get_settings()['mqtt']['topic'])
+        except Exception as e:
+            thread.interrupt_main()
 
     def listen_to(self, topic, callback_fn):
         client = mqtt.client.Client(get_settings()['mqtt']['client_id'])

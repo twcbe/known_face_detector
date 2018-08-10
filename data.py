@@ -140,7 +140,10 @@ class DataUpdater(object):
         listen_to_thread.start()
 
     def subscribe_to_add(self):
-        self.messenger.listen_to('add_person_detail', self.add_person_detail)
+        try:
+            self.messenger.listen_to('add_person_detail', self.add_person_detail)
+        except Exception as e:
+            thread.interrupt_main()
 
     def add_person_detail(self, payload):
         if 'employee_id' not in payload:

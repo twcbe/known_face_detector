@@ -13,13 +13,15 @@ from messenger import MqttMessenger
 
 print(">>> Starting in %s environment" % (current_env()))
 
+# video_device can be fully qualified uri pointing to a video stream/file or a simple video file path
+# video_device can be a number identifying the camera device or -1 for default camera
 video_device = env_variable('video_device', -1)
 enable_display = env_variable('enable_display', False)
 state_file_path = env_variable('state_file', '/data/people_identifier.json')
+verbose_logging = env_variable('debug', 'True').lower() == "true"
 
 # [LEARNING]: OpencvVideoSource seems slightly faster
 camera = OpencvVideoSource(video_device_id=video_device, use_thread=True, limit_frame_rate=False, resolution=(640, 480)).start_camera()
-# camera = OpencvVideoSource(video_device_id="./video.webm", use_thread=True, limit_frame_rate=True, resolution=(640, 480)).start_camera()
 # camera = ImutilsVideoSource(video_device_id=-1, use_thread=True).start_camera()
 
 dataset = Dataset(state_file_path)
@@ -63,6 +65,7 @@ while True:
         display.show(bgr_image, detected_faces)
     # print(detected_faces)
     fps.update()
-    print("program: " + fps.info())
-    print("Camera: " + camera.fps.info())
-    time.sleep(0.01)
+    if frame_number % 10 == 0 and verbose_logging:
+        print("program: " + fps.info())
+        print("Camera: " + camera.fps.info())
+    # time.sleep(0.01)

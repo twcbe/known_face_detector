@@ -36,13 +36,17 @@ class OpencvVideoSource(object):
         self.running = False
 
     def grab_frames(self):
-        while self.running:
-            self.fps.update()
-            self._image = self.grab_frame()
-            self.last_image_read = False
-            if self.limit_frame_rate:
-                self.event.wait()
-                self.event.clear()
+        try:
+            while self.running:
+                self.fps.update()
+                self._image = self.grab_frame()
+                self.last_image_read = False
+                if self.limit_frame_rate:
+                    self.event.wait()
+                    self.event.clear()
+        except Exception as e:
+            thread.interrupt_main()
+
     def grab_frame(self):
         ret, frame = self.cap.read()
         if self.resolution is not None and frame is not None:
@@ -102,9 +106,12 @@ class ImutilsVideoSource(object):
         self.running = False
 
     def grab_frames(self):
-        while self.running:
-            self.fps.update()
-            self._image = self.video_stream.read()
+        try:
+            while self.running:
+                self.fps.update()
+                self._image = self.video_stream.read()
+        except Exception as e:
+            thread.interrupt_main()
 
     def get_rgb_image(self):
         if self.get_image() is None:
