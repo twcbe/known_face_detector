@@ -1,9 +1,10 @@
 import subprocess
 import cv2
-from imutils.video import VideoStream
 import time
+from imutils.video import VideoStream
 from threading import Thread, Event
 from fps import Fps
+from utils import thread_callback
 
 class OpencvVideoSource(object):
     def __init__(self, video_device_id=-1, use_thread=True, limit_frame_rate = False, resolution = None):
@@ -25,7 +26,7 @@ class OpencvVideoSource(object):
         self.running = True
         if self.use_thread:
             start = time.time()
-            self.thread = Thread(target = self.grab_frames, args=())
+            self.thread = Thread(target = thread_callback(self.grab_frames), args=())
             self.thread.daemon = True
             self.thread.start()
             print('>>> camera thread started in %.3f seconds' % (time.time() - start))
@@ -36,16 +37,13 @@ class OpencvVideoSource(object):
         self.running = False
 
     def grab_frames(self):
-        try:
-            while self.running:
-                self.fps.update()
-                self._image = self.grab_frame()
-                self.last_image_read = False
-                if self.limit_frame_rate:
-                    self.event.wait()
-                    self.event.clear()
-        except Exception as e:
-            thread.interrupt_main()
+        while self.running:
+            self.fps.update()
+            self._image = self.grab_frame()
+            self.last_image_read = False
+            if self.limit_frame_rate:
+                self.event.wait()
+                self.event.clear()
 
     def grab_frame(self):
         ret, frame = self.cap.read()
@@ -95,7 +93,7 @@ class ImutilsVideoSource(object):
         self.running = True
         if self.use_thread:
             start = time.time()
-            self.thread = Thread(target = self.grab_frames, args=())
+            self.thread = Thread(target = thread_callback(self.grab_frames), args=())
             self.thread.daemon = True
             self.thread.start()
             print('>>> camera thread started in %.3f seconds' % (time.time() - start))
@@ -106,12 +104,9 @@ class ImutilsVideoSource(object):
         self.running = False
 
     def grab_frames(self):
-        try:
-            while self.running:
-                self.fps.update()
-                self._image = self.video_stream.read()
-        except Exception as e:
-            thread.interrupt_main()
+        while self.running:
+            self.fps.update()
+            self._image = self.video_stream.read()
 
     def get_rgb_image(self):
         if self.get_image() is None:

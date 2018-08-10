@@ -1,3 +1,5 @@
+import time
+import cv2
 from known_face_detector import KnownFaceDetector
 from face_detector import *
 from video_source import *
@@ -7,8 +9,6 @@ from data import Dataset, DataUpdater
 from model import Model
 from tracker import Tracker
 from utils import *
-import time
-import cv2
 from messenger import MqttMessenger
 
 print(">>> Starting in %s environment" % (current_env()))
@@ -16,7 +16,7 @@ print(">>> Starting in %s environment" % (current_env()))
 # video_device can be fully qualified uri pointing to a video stream/file or a simple video file path
 # video_device can be a number identifying the camera device or -1 for default camera
 video_device = env_variable('video_device', -1)
-enable_display = env_variable('enable_display', False)
+enable_display = env_variable('enable_display', 'False').lower() == "true"
 state_file_path = env_variable('state_file', '/data/people_identifier.json')
 verbose_logging = env_variable('debug', 'True').lower() == "true"
 

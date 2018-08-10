@@ -2,14 +2,13 @@ import paho.mqtt.publish as publish
 import paho.mqtt as mqtt
 import json
 from threading import Thread,Event
-from utils import get_settings
-import json
+from utils import *
 
 class MqttMessenger(object):
     def __init__(self):
         self.messages_to_publish = []
         self.event = Event()
-        self.thread = Thread(target = self.background_publish_messages, args=())
+        self.thread = Thread(target = thread_callback(self.background_publish_messages), args=())
         self.thread.daemon = True
         self.thread.start()
 
@@ -30,15 +29,12 @@ class MqttMessenger(object):
         self.event.set()
 
     def background_publish_messages(self):
-        try:
-            while True:
-                self.event.wait()
-                self.event.clear()
-                (msgs, self.messages_to_publish) = (self.messages_to_publish, []) # use separate variable while publishing to reduce race conditions
-                for msg in msgs:
-                    self.publish_message(msg, get_settings()['mqtt']['topic'])
-        except Exception as e:
-            thread.interrupt_main()
+        while True:
+            self.event.wait()
+            self.event.clear()
+            (msgs, self.messages_to_publish) = (self.messages_to_publish, []) # use separate variable while publishing to reduce race conditions
+            for msg in msgs:
+                self.publish_message(msg, get_settings()['mqtt']['topic'])
 
     def listen_to(self, topic, callback_fn):
         client = mqtt.client.Client(get_settings()['mqtt']['client_id'])

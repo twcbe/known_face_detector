@@ -1,4 +1,5 @@
 from messenger import MqttMessenger
+from utils import filter_keys
 
 MIN_NUMBER_OF_OCCURENCES = 3
 MAX_NUMBER_OF_FRAMES_TO_PROCESS = 20  # just buffer size. should be greater than or equal to MIN_NUMBER_OF_OCCURENCES
@@ -25,7 +26,7 @@ class Tracker(object):
 
         people_seen_this_frame = set()
         for detection in face_detections_this_frame:
-            print(detection)
+            print(filter_keys(detection, ['known','distance','predicted_person','closest_matching_person']))
             detected_class = self.get_id(detection)
             if detected_class is None:
                 continue

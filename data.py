@@ -135,15 +135,12 @@ class DataUpdater(object):
         self.current_image_lambda = current_image_lambda
 
     def listen(self):
-        listen_to_thread = Thread(target=self.subscribe_to_add, args = ())
+        listen_to_thread = Thread(target=thread_callback(self.subscribe_to_add), args = ())
         listen_to_thread.daemon = True
         listen_to_thread.start()
 
     def subscribe_to_add(self):
-        try:
-            self.messenger.listen_to('add_person_detail', self.add_person_detail)
-        except Exception as e:
-            thread.interrupt_main()
+        self.messenger.listen_to('add_person_detail', self.add_person_detail)
 
     def add_person_detail(self, payload):
         if 'employee_id' not in payload:

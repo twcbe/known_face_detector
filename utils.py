@@ -3,6 +3,8 @@ import json
 import cv2
 import numpy as np
 import os
+import traceback
+import thread
 
 def load_env_config():
     environment = current_env()
@@ -48,6 +50,19 @@ def rgb2bgr(image):
 
 def bgr2rgb(image):
     return cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+
+def filter_keys(dictionary, keys):
+    return dict((key, dictionary[key]) for key in keys)
+
+def thread_callback(thread_callback_fn):
+    def callback():
+        try:
+            thread_callback_fn()
+        except:
+            traceback.print_exc()
+            thread.interrupt_main()
+    return callback
 
 class Object:
     def toJSON(self):

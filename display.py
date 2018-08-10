@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import thread
 
 font = cv2.FONT_HERSHEY_SIMPLEX
 font_thickness = 2
@@ -10,7 +11,7 @@ detection_color = {  True: [(255,128,64), (255,255,255)],  #BGR  [outline, color
 
 class DisplayWindow(object):
     """A class that encapsulates a display that can show face images with some overlayed content"""
-    def __init__(self, terminate_on_close = True, fullscreen=True):
+    def __init__(self, terminate_on_close = True, fullscreen=False):
         super(DisplayWindow, self).__init__()
         self.terminate_on_close = terminate_on_close
         self.show_window(fullscreen)
@@ -48,6 +49,7 @@ class DisplayWindow(object):
     def terminate_if_window_closed(self):
         if cv2.getWindowProperty(window_name, 0) < 0 and self.terminate_on_close:
             #window is not visible
+            print(">> Exiting, as window was closed")
             thread.interrupt_main()
 
 def get_name(detection):
