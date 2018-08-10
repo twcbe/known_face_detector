@@ -15,13 +15,14 @@ print(">>> Starting in %s environment" % (current_env()))
 
 video_device = env_variable('video_device', -1)
 enable_display = env_variable('enable_display', False)
+state_file_path = env_variable('state_file', '/data/people_identifier.json')
 
 # [LEARNING]: OpencvVideoSource seems slightly faster
 camera = OpencvVideoSource(video_device_id=video_device, use_thread=True, limit_frame_rate=False, resolution=(640, 480)).start_camera()
 # camera = OpencvVideoSource(video_device_id="./video.webm", use_thread=True, limit_frame_rate=True, resolution=(640, 480)).start_camera()
 # camera = ImutilsVideoSource(video_device_id=-1, use_thread=True).start_camera()
 
-dataset = Dataset('./people_identifier')
+dataset = Dataset(state_file_path)
 model = Model(dataset)
 
 detector = KnownFaceDetector(model, face_detector_class=DlibFaceDetector)

@@ -30,6 +30,7 @@ class Dataset:
         self.image_processor = ImageProcessor()
         self.on_data_change_handlers = []
         self.on_data_change(self.persist_state)
+        print(">> Loading state_file from '%s'" % saved_state_file_path)
         self.known_people = self.load_saved_state(saved_state_file_path)
         print("number of entries in known_people dataset: {}".format(len(self.known_people)))
         print("known_people dataset: {}".format(self.known_people))

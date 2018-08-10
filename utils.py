@@ -20,20 +20,20 @@ def get_settings():
     global settings
     return settings
 
-def load_file(filename, extension='json'):
-    if not exists(filename, extension):
+def load_file(filename):
+    if not exists(filename):
         return None
 
-    with open(filename+"."+extension, 'rb') as file_handle:
+    with open(filename, 'rb') as file_handle:
         result = json.load(file_handle)
     return result
 
-def save_file(data, filename, extension='json'):
-    with open(filename+"."+extension, 'wb') as file_handle:
+def save_file(data, filename):
+    with open(filename, 'wb') as file_handle:
         json.dump(data, file_handle)
 
-def exists(filename, extension):
-    return os.path.exists(filename+"."+extension)
+def exists(filename):
+    return os.path.exists(filename)
 
 
 def base64_to_image(encoded_data):
