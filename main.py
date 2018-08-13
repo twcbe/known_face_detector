@@ -19,13 +19,14 @@ video_device = env_variable('video_device', -1)
 enable_display = env_variable('enable_display', 'False').lower() == "true"
 state_file_path = env_variable('state_file', '/data/people_identifier.json')
 verbose_logging = env_variable('debug', 'True').lower() == "true"
+MAX_DISTANCE_THRESHOLD = env_variable('MAX_DISTANCE_THRESHOLD', "0.2")
 
 # [LEARNING]: OpencvVideoSource seems slightly faster
 camera = OpencvVideoSource(video_device_id=video_device, use_thread=True, limit_frame_rate=False, resolution=(640, 480)).start_camera()
 # camera = ImutilsVideoSource(video_device_id=-1, use_thread=True).start_camera()
 
 dataset = Dataset(state_file_path)
-model = Model(dataset)
+model = Model(dataset, MAX_DISTANCE_THRESHOLD=MAX_DISTANCE_THRESHOLD)
 
 detector = KnownFaceDetector(model, face_detector_class=DlibFaceDetector)
 # detector = KnownFaceDetector(model, face_detector_class=OpencvDnnFaceDetector)

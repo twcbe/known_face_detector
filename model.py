@@ -4,10 +4,10 @@ from sklearn.naive_bayes import GaussianNB
 import numpy as np
 
 MIN_CONFIDENCE_THRESHOLD=0.9
-MAX_DISTANCE_THRESHOLD=0.25
 
 class Model(object):
-    def __init__(self, dataset):
+    def __init__(self, dataset, MAX_DISTANCE_THRESHOLD=0.2):
+        self.MAX_DISTANCE_THRESHOLD = MAX_DISTANCE_THRESHOLD
         self.dataset = dataset
         self.image_processor = ImageProcessor()
         self.train_classifier()
