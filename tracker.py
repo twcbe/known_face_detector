@@ -26,7 +26,7 @@ class Tracker(object):
 
         people_seen_this_frame = set()
         for detection in face_detections_this_frame:
-            print(filter_keys(detection, ['known','distance','predicted_person','closest_matching_person']))
+            print(filter_keys(detection, ['known','distance','closest_matching_person','predicted_person']))
             detected_class = self.get_id(detection)
             if detected_class is None:
                 continue
