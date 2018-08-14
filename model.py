@@ -39,7 +39,7 @@ class Model(object):
             (all_reps, clusters) = self.dataset.get_training_data()
             if nearest_class in clusters:
                 distance = compute_mean_euclidean_distance(np.array(all_reps), np.array(clusters), rep, nearest_class)
-                if distance < MAX_DISTANCE_THRESHOLD:
+                if distance < self.MAX_DISTANCE_THRESHOLD:
                     predicted_cluster = nearest_class
         predicted_person = self.dataset.get_person_with_cluster_id(predicted_cluster)
         closest_match = self.dataset.get_person_with_cluster_id(nearest_class)
