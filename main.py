@@ -20,19 +20,22 @@ enable_display = env_variable('enable_display', 'False').lower() == "true"
 state_file_path = env_variable('state_file', '/data/people_identifier.json')
 verbose_logging = env_variable('debug', 'True').lower() == "true"
 MAX_DISTANCE_THRESHOLD = float(env_variable('MAX_DISTANCE_THRESHOLD', "0.2"))
+TRACKER_MIN_NUMBER_OF_OCCURENCES = float(env_variable('MIN_NUMBER_OF_OCCURENCES', "1"))
+TRACKER_MAX_NUMBER_OF_FRAMES_TO_PROCESS = float(env_variable('MAX_NUMBER_OF_FRAMES_TO_PROCESS', "20"))
+TRACKER_MIN_NUMBER_OF_MISSES = float(env_variable('MIN_NUMBER_OF_MISSES', "50"))
 
 # [LEARNING]: OpencvVideoSource seems slightly faster
-camera = OpencvVideoSource(video_device_id=video_device, use_thread=True, limit_frame_rate=False, resolution=(640, 480)).start_camera()
-# camera = ImutilsVideoSource(video_device_id=-1, use_thread=True).start_camera()
+camera = OpencvVideoSource(video_device_id = video_device, use_thread = True, limit_frame_rate = False, resolution = (640, 480)).start_camera()
+# camera = ImutilsVideoSource(video_device_id = -1, use_thread = True).start_camera()
 
 dataset = Dataset(state_file_path)
-model = Model(dataset, MAX_DISTANCE_THRESHOLD=MAX_DISTANCE_THRESHOLD)
+model = Model(dataset, MAX_DISTANCE_THRESHOLD = MAX_DISTANCE_THRESHOLD)
 
-detector = KnownFaceDetector(model, face_detector_class=DlibFaceDetector)
-# detector = KnownFaceDetector(model, face_detector_class=OpencvDnnFaceDetector)
+detector = KnownFaceDetector(model, face_detector_class = DlibFaceDetector)
+# detector = KnownFaceDetector(model, face_detector_class = OpencvDnnFaceDetector)
 
 messenger = MqttMessenger()
-tracker = Tracker(messenger)
+tracker = Tracker(messenger, MIN_NUMBER_OF_OCCURENCES = TRACKER_MIN_NUMBER_OF_OCCURENCES, MAX_NUMBER_OF_FRAMES_TO_PROCESS = TRACKER_MAX_NUMBER_OF_FRAMES_TO_PROCESS, MIN_NUMBER_OF_MISSES = TRACKER_MIN_NUMBER_OF_MISSES)
 updater = DataUpdater(dataset, messenger, lambda : camera.get_rgb_bgr_image()[0])
 fps = Fps()
 if enable_display:
@@ -41,7 +44,7 @@ if enable_display:
 fps.start()
 updater.listen()
 
-not_ready_printed=False
+not_ready_printed = False
 frame_number = 0
 
 

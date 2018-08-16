@@ -1,28 +1,22 @@
 from messenger import MqttMessenger
 from utils import filter_keys
 
-MIN_NUMBER_OF_OCCURENCES = 3
-MAX_NUMBER_OF_FRAMES_TO_PROCESS = 20  # just buffer size. should be greater than or equal to MIN_NUMBER_OF_OCCURENCES
-MIN_NUMBER_OF_MISSES = 50
 
 class Tracker(object):
     """docstring for Tracker"""
-    def __init__(self, messenger):
+    def __init__(self, messenger, MIN_NUMBER_OF_OCCURENCES = 3, MAX_NUMBER_OF_FRAMES_TO_PROCESS = 20, MIN_NUMBER_OF_MISSES = 50):
         super(Tracker, self).__init__()
-        # TODO: not used:
-        # self.frames = []
+        self.MIN_NUMBER_OF_OCCURENCES = MIN_NUMBER_OF_OCCURENCES
+        self.MAX_NUMBER_OF_FRAMES_TO_PROCESS = MAX_NUMBER_OF_FRAMES_TO_PROCESS  # just buffer size. should be greater than or equal to MIN_NUMBER_OF_OCCURENCES
+        self.MIN_NUMBER_OF_MISSES = MIN_NUMBER_OF_MISSES
         self.classes_detected_in_past_frames = []
         self.people_seen_in_past_frames = []
         self.messenger = messenger
 
     def update(self, face_detections_this_frame):
-        # TODO: not used:
-        # self.frames.append(face_detections_this_frame)
-        # self.frames = self.frames[-MAX_NUMBER_OF_FRAMES_TO_PROCESS:]
-
         classes_detected_this_frame = set([self.get_id(detection) for detection in face_detections_this_frame])
         self.classes_detected_in_past_frames.append(classes_detected_this_frame)
-        self.classes_detected_in_past_frames = self.get_last_n(self.classes_detected_in_past_frames, MAX_NUMBER_OF_FRAMES_TO_PROCESS)
+        self.classes_detected_in_past_frames = self.get_last_n(self.classes_detected_in_past_frames, self.MAX_NUMBER_OF_FRAMES_TO_PROCESS)
 
         people_seen_this_frame = set()
         for detection in face_detections_this_frame:
@@ -38,7 +32,7 @@ class Tracker(object):
                 people_seen_this_frame.add(detected_class)
                 detection['event_raised']=True
         self.people_seen_in_past_frames.append(people_seen_this_frame)
-        self.people_seen_in_past_frames = self.get_last_n(self.people_seen_in_past_frames, MIN_NUMBER_OF_MISSES)
+        self.people_seen_in_past_frames = self.get_last_n(self.people_seen_in_past_frames, self.MIN_NUMBER_OF_MISSES)
 
 
 
@@ -63,10 +57,10 @@ class Tracker(object):
         self.messenger.publish_message_async(detection)
 
     def get_past_n_frame_detections(self):
-        return self.get_last_n(self.classes_detected_in_past_frames, MIN_NUMBER_OF_OCCURENCES)
+        return self.get_last_n(self.classes_detected_in_past_frames, self.MIN_NUMBER_OF_OCCURENCES)
 
     def get_past_m_frame_events(self):
-        return self.get_last_n(self.people_seen_in_past_frames, MIN_NUMBER_OF_MISSES)
+        return self.get_last_n(self.people_seen_in_past_frames, self.MIN_NUMBER_OF_MISSES)
 
     def get_last_n(self, array, n):
         return array[-n:]
