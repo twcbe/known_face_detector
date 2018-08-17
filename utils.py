@@ -36,7 +36,7 @@ def save_file(data, filename):
 
 def append_to_file(filename, data):
     if not type(data) == type(''):
-        data = json.dumps(data)
+        data = json.dumps(data, sort_keys = True)
     with open(filename, 'a+') as file_handle:
         file_handle.write(data + '\n')
 

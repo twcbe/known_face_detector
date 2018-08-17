@@ -52,7 +52,7 @@ class Model(object):
 
     def log_training_samples(self, rep, distance, closest_person):
         if self.training_samples_file_path:
-            append_to_file(self.training_samples_file_path, {'time': datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:23],'rep': rep.tolist(), 'distance': distance, 'closest_person': closest_person.serialize()})
+            append_to_file(self.training_samples_file_path, {'_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:23],'rep': rep.tolist(), 'distance': distance, 'closest_person': closest_person.serialize()})
 
 def compute_mean_euclidean_distance(all_reps, clusters, face_rep, predicted_cluster):
     predicted_cluster_reps = all_reps[clusters==predicted_cluster]
