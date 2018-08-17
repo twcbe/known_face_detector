@@ -18,18 +18,20 @@ print(">>> Starting in %s environment" % (current_env()))
 video_device = env_variable('video_device', -1)
 enable_display = env_variable('enable_display', 'False').lower() == "true"
 state_file_path = env_variable('state_file', '/data/people_identifier.json')
+training_samples_file_path = env_variable('training_samples_file', '/data/training_samples.json.log')
 verbose_logging = env_variable('debug', 'True').lower() == "true"
+limit_frame_rate = env_variable('limit_frame_rate', 'False').lower() == "true"
 MAX_DISTANCE_THRESHOLD = float(env_variable('MAX_DISTANCE_THRESHOLD', "0.2"))
-TRACKER_MIN_NUMBER_OF_OCCURENCES = float(env_variable('MIN_NUMBER_OF_OCCURENCES', "1"))
-TRACKER_MAX_NUMBER_OF_FRAMES_TO_PROCESS = float(env_variable('MAX_NUMBER_OF_FRAMES_TO_PROCESS', "20"))
-TRACKER_MIN_NUMBER_OF_MISSES = float(env_variable('MIN_NUMBER_OF_MISSES', "50"))
+TRACKER_MIN_NUMBER_OF_OCCURENCES = int(float(env_variable('MIN_NUMBER_OF_OCCURENCES', "1")))
+TRACKER_MAX_NUMBER_OF_FRAMES_TO_PROCESS = int(float(env_variable('MAX_NUMBER_OF_FRAMES_TO_PROCESS', "20")))
+TRACKER_MIN_NUMBER_OF_MISSES = int(float(env_variable('MIN_NUMBER_OF_MISSES', "50")))
 
 # [LEARNING]: OpencvVideoSource seems slightly faster
-camera = OpencvVideoSource(video_device_id = video_device, use_thread = True, limit_frame_rate = False, resolution = (640, 480)).start_camera()
+camera = OpencvVideoSource(video_device_id = video_device, use_thread = True, limit_frame_rate = limit_frame_rate, resolution = (640, 480)).start_camera()
 # camera = ImutilsVideoSource(video_device_id = -1, use_thread = True).start_camera()
 
 dataset = Dataset(state_file_path)
-model = Model(dataset, MAX_DISTANCE_THRESHOLD = MAX_DISTANCE_THRESHOLD)
+model = Model(dataset, MAX_DISTANCE_THRESHOLD = MAX_DISTANCE_THRESHOLD, training_samples_file_path = training_samples_file_path)
 
 detector = KnownFaceDetector(model, face_detector_class = DlibFaceDetector)
 # detector = KnownFaceDetector(model, face_detector_class = OpencvDnnFaceDetector)

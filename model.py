@@ -1,14 +1,16 @@
 from sklearn.naive_bayes import GaussianNB
 from image_processor import ImageProcessor
 from sklearn.naive_bayes import GaussianNB
+from utils import *
 import numpy as np
 
 MIN_CONFIDENCE_THRESHOLD=0.9
 
 class Model(object):
-    def __init__(self, dataset, MAX_DISTANCE_THRESHOLD=0.2):
+    def __init__(self, dataset, MAX_DISTANCE_THRESHOLD=0.2, training_samples_file_path = None):
         self.MAX_DISTANCE_THRESHOLD = MAX_DISTANCE_THRESHOLD
         self.dataset = dataset
+        self.training_samples_file_path = training_samples_file_path
         self.image_processor = ImageProcessor()
         self.train_classifier()
         self.dataset.on_data_change(self.train_classifier)
@@ -43,13 +45,19 @@ class Model(object):
                     predicted_cluster = nearest_class
         predicted_person = self.dataset.get_person_with_cluster_id(predicted_cluster)
         closest_match = self.dataset.get_person_with_cluster_id(nearest_class)
+        if distance is not None:
+            self.log_training_samples(rep, distance, closest_match)
         return (predicted_person, closest_match, distance)
 
+    def log_training_samples(self, rep, distance, closest_person):
+        if self.training_samples_file_path:
+            append_to_file(self.training_samples_file_path, {'rep': rep.tolist(), 'distance': distance, 'closest_person': closest_person.serialize()})
+
 def compute_mean_euclidean_distance(all_reps, clusters, face_rep, predicted_cluster):
-    predicted_cluster_reps = all_reps[clusters==predicted_cluster] # TODO: issue - possible to be empty? when training new faces.
+    predicted_cluster_reps = all_reps[clusters==predicted_cluster]
     distances = np.array([distance_between(rep, face_rep) for rep in predicted_cluster_reps])
-    average_distance = np.min(distances)
-    return average_distance
+    min_distance = np.min(distances) # we are only taking minimum most distance. Can we say if there are multiple closer representations, it is a better match?
+    return min_distance
 
 def distance_between(a,b):
     d = a.ravel() - b.ravel()

@@ -34,6 +34,12 @@ def save_file(data, filename):
     with open(filename, 'wb') as file_handle:
         json.dump(data, file_handle)
 
+def append_to_file(filename, data):
+    if not type(data) == type(''):
+        data = json.dumps(data)
+    with open(filename, 'a+') as file_handle:
+        file_handle.write(data + '\n')
+
 def exists(filename):
     return os.path.exists(filename)
 

@@ -1,6 +1,6 @@
 {
   "mqtt": {
-    "host": "localhost",
+    "host": "docker.for.mac.localhost",
     "port": 1883,
     "client_id": "Main entrance people identifier",
     "topic": "people_identifier/known_person_detected",
