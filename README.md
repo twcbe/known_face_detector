@@ -1,25 +1,26 @@
-# face-recognition-workspace
+# Known Face Detector
 
 [![CircleCI](https://circleci.com/gh/twlabs/face-recognition-workspace.svg?style=svg&circle-token=a7216b8a8bcb8065391871ca619301bcbefcda75)](https://circleci.com/gh/twlabs/face-recognition-workspace)
 
-This program is easier to setup on a linux machine using docker and a camera attached to the system. There are several customizable options detailed below. To quickly get started jump to the getting started section below.
+This program is easier to setup on a linux machine using docker and a camera attached to the system. There are several customizable options detailed below. To quickly get started jump to the [getting started](#getting-started) section below.
 
-On OSX only network cameras are supported.
+In OS X, only network cameras are supported.
 
-The program can be run in headless mode or with display attached. The display shows the recognized person visually. In case the system doesn't recognize a person correctly it will show the next closest matching person in paranthesis - this is not a match, just shown for debugging.
+The program can be run in headless mode or with display attached. The display shows the recognized person visually. In case the system doesn't recognize a person correctly it will show the next closest matching person in paranthesis. This is not a match, just shown for debugging.
 
-* enable or disable display: `-e enable_display=true` (default false, ie. headless)
+* enable or disable display: 
+  * `-e enable_display=true` (default false, ie. headless)
 
-* The following flags specify to store the state file containing people identities in ./data/people_identifier.json file.
-`-v ./data:/data -e state_file=/data/people_identifier.json`
+* The following flags specify to store the state file containing people identities in `./data/people_identifier.json file`.
+  * `-v ./data:/data -e state_file=/data/people_identifier.json`
 
-The source of the video feed can be anything that opencv supports as video source! It could be a camera attached to the computer, a network camera reachable using an rtsp URI, a pre-recorded video file at a given path.
+The source of the video feed can be anything that [OpenCV](https://opencv.org/) supports as video source! It could be a camera attached to the computer, a network camera reachable using an rtsp URI, a pre-recorded video file at a given path.
 
 * To specify the source:
-`-e video_device=-1 --device /dev/video0` choose the first camera attached to the machine
-`-e video_device=-1 --device /dev/video1` choose the second camera attached to the machine
-`-e video_device="rtsp://<username>:<password>@<ip>/<channel_number>"` choose a network camera reachable using the given URI. Make sure to enter the username, password, ip and channel_number.
-`-e video_device="/data/video_filename.mp4"` make sure to put the video file in the `./data` folder
+  * `-e video_device=-1 --device /dev/video0` choose the first camera attached to the machine.
+  * `-e video_device=-1 --device /dev/video1` choose the second camera attached to the machine.
+  * `-e video_device="rtsp://<username>:<password>@<ip>/<channel_number>"` choose a network camera reachable using the given URI. Make sure to enter the username, password, ip and channel_number.
+  * `-e video_device="/data/video_filename.mp4"` make sure to put the video file in the `./data` folder.
 
 ## Linux:
 ### Prerequisites:
@@ -41,8 +42,8 @@ docker run -it --rm --name="known_face_detector" -v ./data:/data --device /dev/v
 
 ## OSX:
 ### Prerequisites:
-* docker
-* xquartz - for displaying video on screen, not necessary for headless mode.
+* [docker](https://www.docker.com/)
+* [xquartz](https://www.xquartz.org/) - for displaying video on screen, not necessary for headless mode.
 * network camera - required, since OSX does not provide a raw video device, it cannot be forwarded inside the container. One can run the program like a demo using a pre-captured video file too, in which case the network camera is not necessary.
 
 ### Getting Started:
@@ -57,4 +58,4 @@ All the above examples download the docker from docker hub. To build the image l
 docker build -t known_face_detector .
 ```
 
-To run using the local image, replace `twcbe/known_face_detector:master` in the above commands with `known_face_detector`
+To run using the local image, replace `twcbe/known_face_detector:master` in the above commands with `known_face_detector`.
