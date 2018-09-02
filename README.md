@@ -2,6 +2,8 @@
 
 [![CircleCI](https://circleci.com/gh/twlabs/face-recognition-workspace.svg?style=svg&circle-token=a7216b8a8bcb8065391871ca619301bcbefcda75)](https://circleci.com/gh/twlabs/face-recognition-workspace)
 
+Detect and Identify people, and emit events. Uses a modular design, can be connected to other apps using MQTT events.
+
 This program is easier to setup on a linux machine using docker and a camera attached to the system. There are several customizable options detailed below. To quickly get started jump to the [getting started](#getting-started) section below.
 
 In OS X, only network cameras are supported.

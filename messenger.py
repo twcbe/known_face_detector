@@ -5,7 +5,14 @@ from threading import Thread,Event
 from utils import *
 
 class MqttMessenger(object):
-    def __init__(self):
+    def __init__(self, host, port, client_id, username, password, topic, source_name):
+        self.mqtt_host = host
+        self.mqtt_port = port
+        self.mqtt_client_id = client_id
+        self.mqtt_username = username
+        self.mqtt_password = password
+        self.mqtt_topic = topic
+        self.source_name = source_name
         self.messages_to_publish = []
         self.event = Event()
         self.thread = Thread(target = thread_callback(self.background_publish_messages), args=())
@@ -16,15 +23,15 @@ class MqttMessenger(object):
         print(">> Publishing event")
         publish.single(topic,
             payload = json.dumps(payload),
-            hostname = get_settings()['mqtt']['host'],
-            client_id = get_settings()['mqtt']['client_id'],
-            auth = get_settings()['mqtt']['credentials'],
-            port = get_settings()['mqtt']['port'],
+            hostname = self.mqtt_host,
+            client_id = self.mqtt_client_id,
+            auth = {'username': self.mqtt_username, 'password': self.mqtt_password},
+            port = self.mqtt_port,
             protocol = mqtt.client.MQTTv311)
 
     def publish_message_async(self, payload):
         payload = payload.copy()
-        payload['source'] = get_settings()['source_name']
+        payload['source'] = self.source_name
         self.messages_to_publish.append(payload)
         self.event.set()
 
@@ -34,15 +41,15 @@ class MqttMessenger(object):
             self.event.clear()
             (msgs, self.messages_to_publish) = (self.messages_to_publish, []) # use separate variable while publishing to reduce race conditions
             for msg in msgs:
-                self.publish_message(msg, get_settings()['mqtt']['topic'])
+                self.publish_message(msg, self.mqtt_topic)
 
     def listen_to(self, topic, callback_fn):
-        client = mqtt.client.Client(get_settings()['mqtt']['client_id'])
-        client.username_pw_set(get_settings()['mqtt']['credentials']['username'], get_settings()['mqtt']['credentials']['password'])
+        client = mqtt.client.Client(self.mqtt_client_id)
+        client.username_pw_set(self.mqtt_username, self.mqtt_password)
         client.on_connect = self.get_on_connect_handler(topic)
         client.on_message = self.get_callback(callback_fn)
         #client.tls_set('/etc/ssl/certs/DST_Root_CA_X3.pemtls_version=ssl.PROTOCOL_TLSv1_2)
-        client.connect(host=get_settings()['mqtt']['host'], port=get_settings()['mqtt']['port'])
+        client.connect(host=self.mqtt_host, port=self.mqtt_port)
         client.loop_forever()
 
     def get_on_connect_handler(self, topic):

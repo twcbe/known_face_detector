@@ -21,6 +21,7 @@ class OpencvVideoSource(object):
     def start_camera(self):
         start = time.time()
         self.cap = cv2.VideoCapture(self.video_device_id)
+        self.cap.set(cv2.cv.CV_CAP_PROP_FPS, 20)
         print('>>> opened VideoCapture (%s) in %.3f seconds' % (self.video_device_id, time.time() - start))
         # subprocess.check_output(['bash', '-c', 'v4l2-ctl -c backlight_compensation=1,sharpness=130,power_line_frequency=1,white_balance_temperature_auto=1,saturation=128,contrast=128,brightness=128,focus_absolute=0,focus_auto=0'])
         self.running = True
@@ -41,6 +42,7 @@ class OpencvVideoSource(object):
             self.fps.update()
             self._image = self.grab_frame()
             self.last_image_read = False
+            # time.sleep(0.02) // useful when reading video from file
             if self.limit_frame_rate:
                 self.event.wait()
                 self.event.clear()

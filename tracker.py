@@ -4,7 +4,7 @@ from utils import filter_keys
 
 class Tracker(object):
     """docstring for Tracker"""
-    def __init__(self, messenger, MIN_NUMBER_OF_OCCURENCES = 3, MAX_NUMBER_OF_FRAMES_TO_PROCESS = 20, MIN_NUMBER_OF_MISSES = 50):
+    def __init__(self, messenger = None, MIN_NUMBER_OF_OCCURENCES = 3, MAX_NUMBER_OF_FRAMES_TO_PROCESS = 20, MIN_NUMBER_OF_MISSES = 50, enable_events = False):
         super(Tracker, self).__init__()
         self.MIN_NUMBER_OF_OCCURENCES = MIN_NUMBER_OF_OCCURENCES
         self.MAX_NUMBER_OF_FRAMES_TO_PROCESS = MAX_NUMBER_OF_FRAMES_TO_PROCESS  # just buffer size. should be greater than or equal to MIN_NUMBER_OF_OCCURENCES
@@ -12,6 +12,7 @@ class Tracker(object):
         self.classes_detected_in_past_frames = []
         self.people_seen_in_past_frames = []
         self.messenger = messenger
+        self.enable_events = enable_events
 
     def update(self, face_detections_this_frame):
         classes_detected_this_frame = set([self.get_id(detection) for detection in face_detections_this_frame])
@@ -54,7 +55,8 @@ class Tracker(object):
         return (is_valid_recognition_event, event_recently_raised)
 
     def raise_event(self, detection):
-        self.messenger.publish_message_async(detection)
+        if self.enable_events and self.messenger:
+            self.messenger.publish_message_async(detection)
 
     def get_past_n_frame_detections(self):
         return self.get_last_n(self.classes_detected_in_past_frames, self.MIN_NUMBER_OF_OCCURENCES)

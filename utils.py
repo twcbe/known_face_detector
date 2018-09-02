@@ -6,21 +6,20 @@ import os
 import traceback
 import thread
 
-def load_env_config():
-    environment = current_env()
-    with open("config/settings/%s.json" % environment) as f:
-        global settings
-        settings = json.load(f)
-
 def current_env():
     return env_variable('ENV', 'development')
 
-def env_variable(key, default = None):
-    return os.environ.get(key) or default
-
-def get_settings():
-    global settings
-    return settings
+def env_variable(key, default = None, return_type=str):
+    value = os.environ.get(key) or default
+    if return_type == str:
+        return value
+    if return_type == bool:
+        return value.lower() == 'true'
+    if return_type == float:
+        return float(value)
+    if return_type == int:
+        return int(float(value))
+    raise "unknown return type %s" % (return_type)
 
 def load_file(filename):
     if not exists(filename):
@@ -108,5 +107,3 @@ class Rectangle(list):
 
     def toJSON(self):
         return json.dumps([x1,y1,x2,y2])
-
-load_env_config()
