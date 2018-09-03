@@ -42,7 +42,7 @@ class OpencvVideoSource(object):
             self.fps.update()
             self._image = self.grab_frame()
             self.last_image_read = False
-            # time.sleep(0.02) // useful when reading video from file
+            # time.sleep(0.02) # useful when reading video from file
             if self.limit_frame_rate:
                 self.event.wait()
                 self.event.clear()
