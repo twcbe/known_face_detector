@@ -10,8 +10,8 @@ In OS X, only network cameras are supported.
 
 The program can be run in headless mode or with display attached. The display shows the recognized person visually. In case the system doesn't recognize a person correctly it will show the next closest matching person in paranthesis. This is not a match, just shown for debugging.
 
-* enable or disable display: 
-  * `-e enable_display=true` (default false, ie. headless)
+* Enable or disable display: 
+  * `-e enable_display=True` (default False, ie. headless)
 
 * The following flags specify to store the state file containing people identities in `./data/people_identifier.json file`.
   * `-v ./data:/data -e state_file=/data/people_identifier.json`
@@ -23,6 +23,13 @@ The source of the video feed can be anything that [OpenCV](https://opencv.org/) 
   * `-e video_device=-1 --device /dev/video1` choose the second camera attached to the machine.
   * `-e video_device="rtsp://<username>:<password>@<ip>/<channel_number>"` choose a network camera reachable using the given URI. Make sure to enter the username, password, ip and channel_number.
   * `-e video_device="/data/video_filename.mp4"` make sure to put the video file in the `./data` folder.
+
+* Specify the mqtt credentials:
+  * `Host : -e mqtt_host=<hostname>` (default docker.for.mac.localhost)
+  * `Port : -e mqtt_port=<port>` (default 1883)
+  * `Topic : -e mqtt_topic=<topic>` (default face_recognition)
+  * `Username : -e mqtt_username=<username` (optional)
+  * `Password : -e mqtt_password=<password>` (optional)
 
 ## Linux:
 ### Prerequisites:
